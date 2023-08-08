@@ -1,20 +1,35 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import OneSignal from "react-native-onesignal";
+import Constants from "expo-constants";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import MainScreen from "./MainScreen";
+import { Header } from "./Header";
+import { Button } from "react-native";
+import Account from "./Account";
+OneSignal.setAppId(Constants.expoConfig!!.extra!!.oneSignalAppId);
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{ statusBarColor: "#000000" }}
+        initialRouteName="Main"
+      >
+        <Stack.Screen
+          name="Main"
+          component={MainScreen}
+          options={{
+            header: () => <Header title="Aave alarm" />,
+          }}
+        />
+        <Stack.Screen
+          name="Account"
+          component={Account}
+          options={{ header: () => <Header title="Account" /> }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

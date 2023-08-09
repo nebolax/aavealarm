@@ -6,6 +6,8 @@ AaveVersion = Literal['V2', 'V3']
 
 class Chain(Enum):
     ETHEREUM = 'ETHEREUM'
+    ETHEREUM_SEPOLIA = 'ETHEREUM_SEPOLIA'
+    POLYGON_MUMBAI = 'POLYGON_MUMBAI'
 
 
 class TrackedAccount(NamedTuple):

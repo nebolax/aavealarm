@@ -13,8 +13,9 @@ logger = logging.getLogger(__name__)
     
 WS_NEW_HEADS_SUBSCRIBE_MESSAGE = {'id': 1, 'method': 'eth_subscribe', 'params': ['newHeads']}
 
-HEALTH_FACTOR_CHECK_PERIOD = 60
+HEALTH_FACTOR_CHECK_PERIOD = 5
 HEALTH_FACTOR_BATCH_SIZE = 100  # How many accounts to check at once. Limited by max gas per call.
+MAX_UINT256 = 2 ** 256 - 1
 
 V2_LIQUIDATION_TOPIC = ...
 V3_LIQUIDATION_TOPIC = ...
@@ -33,20 +34,17 @@ def make_batches(lst: list, batch_size: int) -> list[list]:
         yield lst[i:i + batch_size]
 
 
-class BaseConnector():
+class ChainConnector():
     def __init__(
             self,
             chain: Chain,
+            http_rpc_url: str,
+            ws_rpc_url: str,
             notifier,
             settings,
             v2_pool_address: str,
             v3_pool_address: str,
     ) -> None:
-        http_rpc_url = os.getenv(f'{chain.name}_HTTP_RPC')
-        ws_rpc_url = os.getenv(f'{chain.name}_WS_RPC')
-        if not http_rpc_url or not ws_rpc_url:
-            raise StartupException(f'Either http or ws rpc for {chain.name} was not found')
-
         self.http_rpc_url = http_rpc_url
         self.ws_rpc_url = ws_rpc_url
         self.web3 = Web3(HTTPProvider(http_rpc_url))
@@ -56,11 +54,84 @@ class BaseConnector():
         self.v2_pool_address = v2_pool_address
         self.v3_pool_address = v3_pool_address
 
+        with open('./abi/v2_pool.json') as f:
+            v2_pool_abi = json.loads(f.read())
+
+        with open('./abi/v3_pool.json') as f:
+            v3_pool_abi = json.loads(f.read())
+
+        self.v2_pool_contract = self.web3.eth.contract(address=v2_pool_address, abi=v2_pool_abi)
+        self.v3_pool_contract = self.web3.eth.contract(address=v3_pool_address, abi=v3_pool_abi)
+
     def get_relevant_accounts_with_thresholds(self) -> list[TrackedAccountWithHF]:
         """Get all accounts from the DB that belong to this chain and their threshold health factors"""
+        return [
+            TrackedAccountWithHF(
+                account=TrackedAccount(
+                    address='0x4bBa290826C253BD854121346c370a9886d1bC26',
+                    chain=Chain.ETHEREUM_SEPOLIA,
+                    aave_version='V3',
+                ),
+                health_factor_threshold=1.2,
+            ),
+            TrackedAccountWithHF(
+                account=TrackedAccount(
+                    address='0xFf385BB2bd955E906b5ED6A5535B9AFA6F9a3796',
+                    chain=Chain.ETHEREUM_SEPOLIA,
+                    aave_version='V3',
+                ),
+                health_factor_threshold=1.5,
+            ),
+        ]
+        # return [
+        #     TrackedAccountWithHF(
+        #         account=TrackedAccount(
+        #             address='0x4bBa290826C253BD854121346c370a9886d1bC26',
+        #             chain=Chain.POLYGON_MUMBAI,
+        #             aave_version='V2'
+        #         ),
+        #         health_factor_threshold=2.0,
+        #     ),
+        #     TrackedAccountWithHF(
+        #         account=TrackedAccount(
+        #             address='0x75a0b9a3d63c4a56198831369657d6D8F44BE25b',
+        #             chain=Chain.POLYGON_MUMBAI,
+        #             aave_version='V3',
+        #         ),
+        #         health_factor_threshold=1.8,
+        #     )
+        # ]
 
-    def get_v2_health_factors(self, accounts_batch: list[TrackedAccount]) -> list[float]:
-        """Get health factor of all accounts in the batch"""
+    def get_v2_health_factors(self, accounts_batch: list[TrackedAccountWithHF]) -> list[float]:
+        """Get aave V2 health factors of all accounts in the batch"""
+        accounts_data = []
+        for account in accounts_batch:
+            accounts_data.append(self.v2_pool_contract.functions.getUserAccountData(account.account.address).call())
+
+        health_factors = []
+        for account_data in accounts_data:
+            if account_data[-1] == MAX_UINT256:
+                health_factors.append(-1)
+            else:
+                health_factors.append(account_data[-1] / 1e18)
+        
+        print('aaaa v2 health factors', health_factors)
+        return health_factors
+
+    def get_v3_health_factors(self, accounts_batch: list[TrackedAccountWithHF]) -> list[float]:
+        """Get aave V3 health factor of all accounts in the batch"""
+        accounts_data = []
+        for account in accounts_batch:
+            accounts_data.append(self.v3_pool_contract.functions.getUserAccountData(account.account.address).call())
+
+        health_factors = []
+        for account_data in accounts_data:
+            if account_data[-1] == MAX_UINT256:
+                health_factors.append(-1)
+            else:
+                health_factors.append(account_data[-1] / 1e18)
+        print('aaaa v3 health factors', health_factors)
+        return health_factors
 
     def health_factor_periodic_task(self) -> None:
         """
@@ -82,7 +153,7 @@ class BaseConnector():
         
         for account, health_factor in zip(v2_accounts + v3_accounts, v2_health_factors + v3_health_factors):
             if health_factor < account.health_factor_threshold:
-                self.notifier.notify(account, health_factor)
+                self.notifier.notify_of_health_factor(account, health_factor)
 
     async def monitor_health_factor(self) -> None:
         """Periodically check health factor of all accounts on this chain"""
@@ -100,7 +171,7 @@ class BaseConnector():
             'toBlock': 'latest',
         })
         for log in v2_logs:
-            self.process_liquidation_log('V2', log)
+            self.process_v2_liquidation_log(log)
 
         last_v3_checked_block = self.settings.get_setting(f'LAST_{self.chain.name}_V3_CHECKED_BLOCK')
         v3_logs = self.web3.eth.get_logs({
@@ -110,10 +181,14 @@ class BaseConnector():
             'toBlock': 'latest',
         })
         for log in v3_logs:
-            self.process_liquidation_log('V3', log)
+            self.process_v3_liquidation_log(log)
 
-    def process_liquidation_log(self, aave_version: AaveVersion, log: dict) -> None:
-        """Process a single liquidation log and emit a notification if the liquidated account is tracked."""
+    def process_v2_liquidation_log(self, log: dict) -> None:
+        """Process a single aave v2 liquidation log and emit a notification if the liquidated account is tracked."""
+        ...
+    
+    def process_v3_liquidation_log(self, log: dict) -> None:
+        """Process a single aave v3 liquidation log and emit a notification if the liquidated account is tracked."""
         ...
 
     async def monitor_liquidations(self, aave_version: AaveVersion) -> None:

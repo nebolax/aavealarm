@@ -1,8 +1,6 @@
 from typing import NamedTuple, Literal, Type
 from enum import Enum
 
-AaveVersion = Literal['V2', 'V3']
-
 
 class Chain(Enum):
     ETHEREUM = 'ETHEREUM'
@@ -10,12 +8,12 @@ class Chain(Enum):
     POLYGON_MUMBAI = 'POLYGON_MUMBAI'
 
 
-class TrackedAccount(NamedTuple):
+class ChainAccount(NamedTuple):
     address: str
     chain: Chain
-    aave_version: AaveVersion
+    aave_version: int
 
 
-class TrackedAccountWithHF(NamedTuple):
-    account: TrackedAccount
+class ChainAccountWithHF(NamedTuple):
+    account: ChainAccount
     health_factor_threshold: float

@@ -22,7 +22,6 @@ export function Header(props: { title: string }) {
               color: "#FFF",
               fontSize: 24,
               fontWeight: "bold",
-              fontFamily: "Inter",
             }}
           >
             {props.title}

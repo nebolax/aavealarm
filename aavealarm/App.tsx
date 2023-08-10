@@ -4,18 +4,23 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MainScreen from "./MainScreen";
 import { Header } from "./Header";
-import { Button } from "react-native";
 import Account from "./Account";
-OneSignal.setAppId(Constants.expoConfig!!.extra!!.oneSignalAppId);
+import Settings from "./Settings";
+import Addition from "./Addition";
 
+OneSignal.setAppId(Constants.expoConfig!!.extra!!.oneSignalAppId);
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  OneSignal.getDeviceState().then((state) => {
+    console.log("aaaa onesignal user id:", state?.userId);
+  });
+  OneSignal.promptForPushNotificationsWithUserResponse();
   return (
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{ statusBarColor: "#000000" }}
-        initialRouteName="Main"
+        initialRouteName="MainScreen"
       >
         <Stack.Screen
           name="Main"
@@ -28,6 +33,16 @@ export default function App() {
           name="Account"
           component={Account}
           options={{ header: () => <Header title="Account" /> }}
+        />
+        <Stack.Screen
+          name="Settings"
+          component={Settings}
+          options={{ header: () => <Header title="Settings" /> }}
+        />
+        <Stack.Screen
+          name="Addition"
+          component={Addition}
+          options={{ header: () => <Header title="New account" /> }}
         />
       </Stack.Navigator>
     </NavigationContainer>

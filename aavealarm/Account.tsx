@@ -1,6 +1,7 @@
 import { Image, Text, View, SafeAreaView, ScrollView } from "react-native";
-import { Chain, ChainAccount } from "./types";
+import { Chain, ChainAccount, ChainAccountData } from "./types";
 import { queryAccountData } from "./network";
+import { useEffect, useState } from "react";
 
 type AssetIconKeyType = "gho" | "eth" | "dai";
 
@@ -9,6 +10,28 @@ const ASSET_ICONS = {
   eth: require("./assets/eth.png"),
   dai: require("./assets/dai.png"),
 };
+
+function formatNumber(num: number | undefined): string {
+  if (num === undefined) {
+    return "-";
+  }
+  if (num === 0) {
+    return "0";
+  }
+  let result = "$";
+  if (num < 1e3) {
+    result += num.toFixed(1);
+  } else if (num < 1e6) {
+    result += (num / 1e3).toFixed(1) + "k";
+  } else if (num < 1e9) {
+    result += (num / 1e6).toFixed(1) + "m";
+  } else if (num < 1e12) {
+    result += (num / 1e9).toFixed(1) + "b";
+  } else {
+    result += (num / 1e12).toFixed(1) + "t";
+  }
+  return result;
+}
 
 function AcccountLabel(props: { text: string }) {
   return (
@@ -76,8 +99,8 @@ function AssetsTableHeaderFooter(props: {
 
 function AssetsTableRow(props: {
   assetName: string;
-  supplied: string;
-  borrowed: string;
+  supplied?: number;
+  borrowed?: number;
 }) {
   return (
     <View
@@ -107,12 +130,12 @@ function AssetsTableRow(props: {
           paddingLeft: 32,
         }}
       >
-        {props.supplied}
+        {formatNumber(props.supplied)}
       </Text>
       <Text
         style={{ color: "#ACACAC", fontSize: 14, flex: 1, textAlign: "right" }}
       >
-        {props.borrowed}
+        {formatNumber(props.borrowed)}
       </Text>
     </View>
   );
@@ -120,8 +143,13 @@ function AssetsTableRow(props: {
 
 export default function Account(props: { route: any }) {
   const { account }: { account: ChainAccount } = props.route.params;
+  const [accountData, setAccountData] = useState<
+    ChainAccountData | undefined
+  >();
   console.log("aaaa account", account);
-  queryAccountData(account);
+  useEffect(() => {
+    queryAccountData(account).then((data) => setAccountData(data));
+  }, []);
   return (
     <View
       style={{
@@ -166,10 +194,17 @@ export default function Account(props: { route: any }) {
             </View>
             <AccountIndicator
               name="Health factor"
-              value="1.3"
+              value={
+                accountData ? accountData.healthFactor.toString() : "loading"
+              }
               withBorder={true}
             />
-            <AccountIndicator name="Net APY" value="3.4%" />
+            <AccountIndicator
+              name="Net APY"
+              value={
+                accountData ? accountData.netAPY.toString() + "%" : "loading"
+              }
+            />
           </View>
           <View style={{ margin: 16 }}>
             <AssetsTableHeaderFooter
@@ -178,7 +213,15 @@ export default function Account(props: { route: any }) {
               value3="Borrowed"
             />
             <View style={{ backgroundColor: "#2B2E40" }}>
-              <AssetsTableRow assetName="GHO" supplied="0" borrowed="$10.4k" />
+              {accountData?.assets.map((assetData, index) => (
+                <AssetsTableRow
+                  key={index}
+                  assetName={assetData.symbol}
+                  supplied={assetData.supplied}
+                  borrowed={assetData.borrowed}
+                />
+              ))}
+              {/* <AssetsTableRow assetName="GHO" supplied="0" borrowed="$10.4k" />
               <AssetsTableRow assetName="ETH" supplied="$5k" borrowed="0" />
               <AssetsTableRow assetName="DAI" supplied="$20k" borrowed="0" />
               <AssetsTableRow assetName="DAI" supplied="$20k" borrowed="0" />
@@ -186,7 +229,7 @@ export default function Account(props: { route: any }) {
               <AssetsTableRow assetName="DAI" supplied="$20k" borrowed="0" />
               <AssetsTableRow assetName="DAI" supplied="$20k" borrowed="0" />
               <AssetsTableRow assetName="DAI" supplied="$20k" borrowed="0" />
-              <AssetsTableRow assetName="DAI" supplied="$20k" borrowed="0" />
+              <AssetsTableRow assetName="DAI" supplied="$20k" borrowed="0" /> */}
             </View>
             <AssetsTableHeaderFooter
               value1="Total"

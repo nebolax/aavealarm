@@ -26,6 +26,7 @@ export interface ChainAccountData {
 
 export interface SingleChainAaveTokenInfo {
   symbol: string;
+  decimals: number;
   aToken?: string;
   stableDebtToken?: string;
   variableDebtToken?: string;

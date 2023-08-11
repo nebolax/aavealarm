@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { Chain, ChainAccount } from "./types";
+import { Chain, ChainAccount, IconsPerChain } from "./types";
 
 const styles = StyleSheet.create({
   container: {
@@ -68,10 +68,12 @@ const FloatingButton = () => (
 
 type BlockchainIconKeyType = "ethereum" | "avalanche" | "polygon";
 
-const BLOCKCHAIN_ICONS = {
-  ethereum: require("./assets/ethereum.png"),
-  avalanche: require("./assets/avalanche.png"),
-  polygon: require("./assets/polygon.png"),
+const CHAIN_ICONS: IconsPerChain = {
+  [Chain.ETHEREUM]: require("./assets/ethereum.png"),
+  [Chain.AVALANCHE]: require("./assets/avalanche.png"),
+  [Chain.POLYGON]: require("./assets/polygon.png"),
+  [Chain.ETHEREUM_SEPOLIA]: require("./assets/ethereum.png"),
+  [Chain.POLYGON_MUMBAI]: require("./assets/polygon.png"),
 };
 
 function SingleAccount(props: {
@@ -93,11 +95,7 @@ function SingleAccount(props: {
       <View style={{ flex: 1, flexBasis: 48, flexGrow: 0, flexShrink: 0 }}>
         <Image
           style={{ width: 32, height: 32 }}
-          source={
-            BLOCKCHAIN_ICONS[
-              props.account.chain.toLowerCase() as BlockchainIconKeyType
-            ]
-          }
+          source={CHAIN_ICONS[props.account.chain]}
         />
       </View>
       <View style={{ flex: 1 }}>
@@ -139,6 +137,11 @@ export default function MainScreen(props: { navigation: NavigationProp<any> }) {
       address: "0x4bBa290826C253BD854121346c370a9886d1bC26",
       chain: Chain.POLYGON,
       aaveVersion: 2,
+    },
+    {
+      address: "0x4bBa290826C253BD854121346c370a9886d1bC26",
+      chain: Chain.ETHEREUM_SEPOLIA,
+      aaveVersion: 3,
     },
   ];
   return (

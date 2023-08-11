@@ -38,3 +38,7 @@ export type AaveTokensPerChain = {
 export type RpcsPerChain = {
   [key in Chain]: string;
 };
+
+export type IconsPerChain = {
+  [key in Chain]: any;
+};

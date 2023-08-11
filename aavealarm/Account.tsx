@@ -1,5 +1,6 @@
 import { Image, Text, View, SafeAreaView, ScrollView } from "react-native";
 import { Chain, ChainAccount } from "./types";
+import { queryAccountData } from "./network";
 
 type AssetIconKeyType = "gho" | "eth" | "dai";
 
@@ -120,6 +121,7 @@ function AssetsTableRow(props: {
 export default function Account(props: { route: any }) {
   const { account }: { account: ChainAccount } = props.route.params;
   console.log("aaaa account", account);
+  queryAccountData(account);
   return (
     <View
       style={{

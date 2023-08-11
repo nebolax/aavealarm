@@ -1,3 +1,5 @@
+require("./shim");
+
 import OneSignal from "react-native-onesignal";
 import Constants from "expo-constants";
 import { NavigationContainer } from "@react-navigation/native";
@@ -8,7 +10,7 @@ import Account from "./Account";
 import Settings from "./Settings";
 import Addition from "./Addition";
 
-OneSignal.setAppId(Constants.expoConfig!!.extra!!.oneSignalAppId);
+OneSignal.setAppId(Constants.expoConfig.extra.oneSignalAppId);
 const Stack = createNativeStackNavigator();
 
 export default function App() {

@@ -133,6 +133,8 @@
 				CE14B8655460445288BE7276 /* OneSignalNotificationServiceExtension */,
 				CB7D5643E4094D6E8A191F89 /* OneSignalNotificationServiceExtension */,
 				07E7E97D1CF243C5A497FB86 /* OneSignalNotificationServiceExtension */,
+				615DF55731BA4C92827EA55D /* OneSignalNotificationServiceExtension */,
+				9942102EA1754EC8AB6253C1 /* OneSignalNotificationServiceExtension */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -187,6 +189,8 @@
 				9FEEA620153E916200B5E3C3 /* Pods-OneSignalNotificationServiceExtension.release.xcconfig */,
 				CB7D5643E4094D6E8A191F89 /* OneSignalNotificationServiceExtension */,
 				07E7E97D1CF243C5A497FB86 /* OneSignalNotificationServiceExtension */,
+				615DF55731BA4C92827EA55D /* OneSignalNotificationServiceExtension */,
+				9942102EA1754EC8AB6253C1 /* OneSignalNotificationServiceExtension */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -212,6 +216,30 @@
 			sourceTree = "<group>";
 		};
 		07E7E97D1CF243C5A497FB86 /* OneSignalNotificationServiceExtension */ = {
+			isa = PBXGroup;
+			children = (
+				E673FB40F04F4574A939524D /* NotificationService.h */,
+				D685A03138EF4D31B30BA94C /* OneSignalNotificationServiceExtension.entitlements */,
+				F2906C2C97C24289A5B294E0 /* OneSignalNotificationServiceExtension-Info.plist */,
+				F2F72D0C6CF9458FBCB69E18 /* NotificationService.m */,
+			);
+			name = OneSignalNotificationServiceExtension;
+			path = OneSignalNotificationServiceExtension;
+			sourceTree = "<group>";
+		};
+		615DF55731BA4C92827EA55D /* OneSignalNotificationServiceExtension */ = {
+			isa = PBXGroup;
+			children = (
+				E673FB40F04F4574A939524D /* NotificationService.h */,
+				D685A03138EF4D31B30BA94C /* OneSignalNotificationServiceExtension.entitlements */,
+				F2906C2C97C24289A5B294E0 /* OneSignalNotificationServiceExtension-Info.plist */,
+				F2F72D0C6CF9458FBCB69E18 /* NotificationService.m */,
+			);
+			name = OneSignalNotificationServiceExtension;
+			path = OneSignalNotificationServiceExtension;
+			sourceTree = "<group>";
+		};
+		9942102EA1754EC8AB6253C1 /* OneSignalNotificationServiceExtension */ = {
 			isa = PBXGroup;
 			children = (
 				E673FB40F04F4574A939524D /* NotificationService.h */,

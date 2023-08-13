@@ -66,14 +66,15 @@ const FloatingButton = () => (
   </TouchableOpacity>
 );
 
-type BlockchainIconKeyType = "ethereum" | "avalanche" | "polygon";
-
 const CHAIN_ICONS: IconsPerChain = {
-  [Chain.ETHEREUM]: require("./assets/ethereum.png"),
-  [Chain.AVALANCHE]: require("./assets/avalanche.png"),
-  [Chain.POLYGON]: require("./assets/polygon.png"),
-  [Chain.ETHEREUM_SEPOLIA]: require("./assets/ethereum.png"),
-  [Chain.POLYGON_MUMBAI]: require("./assets/polygon.png"),
+  [Chain.ETHEREUM]: require("./assets/chains/ethereum.png"),
+  [Chain.AVALANCHE]: require("./assets/chains/avalanche.png"),
+  [Chain.POLYGON]: require("./assets/chains/polygon.png"),
+  [Chain.ETHEREUM_SEPOLIA]: require("./assets/chains/ethereum.png"),
+  [Chain.POLYGON_MUMBAI]: require("./assets/chains/polygon.png"),
+  [Chain.ARBITRUM]: require("./assets/chains/arbitrum.png"),
+  [Chain.OPTIMISM]: require("./assets/chains/optimism.png"),
+  [Chain.METIS]: require("./assets/chains/metis.png"),
 };
 
 function SingleAccount(props: {

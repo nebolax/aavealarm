@@ -1,15 +1,20 @@
+import { ReserveDataHumanized } from "@aave/contract-helpers";
+
 export enum Chain {
   ETHEREUM = "ETHEREUM",
   ETHEREUM_SEPOLIA = "ETHEREUM_SEPOLIA",
   POLYGON = "POLYGON",
   POLYGON_MUMBAI = "POLYGON_MUMBAI",
   AVALANCHE = "AVALANCHE",
+  ARBITRUM = "ARBITRUM",
+  METIS = "METIS",
+  OPTIMISM = "OPTIMISM",
 }
 
 export interface ChainAccount {
   chain: Chain;
   address: string;
-  aaveVersion: number;
+  aaveVersion: 2 | 3;
 }
 
 export interface SingleAssetUsageInfo {
@@ -21,6 +26,8 @@ export interface SingleAssetUsageInfo {
 export interface ChainAccountData {
   healthFactor: number;
   netAPY: number;
+  totalSupplied: number;
+  totalBorrowed: number;
   assets: SingleAssetUsageInfo[];
 }
 
@@ -32,8 +39,13 @@ export interface SingleChainAaveTokenInfo {
   variableDebtToken?: string;
 }
 
-export type AaveTokensPerChain = {
-  [key in Chain]: SingleChainAaveTokenInfo[];
+export interface X {
+  v2: string;
+  // v3: string;
+}
+
+export type AaveLendingPoolsPerChain = {
+  [key in Chain]: { v2?: string; v3?: string };
 };
 
 export type RpcsPerChain = {
@@ -42,4 +54,8 @@ export type RpcsPerChain = {
 
 export type IconsPerChain = {
   [key in Chain]: any;
+};
+
+export type ReservesMapping = {
+  [key: string]: ReserveDataHumanized;
 };

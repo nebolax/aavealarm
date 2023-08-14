@@ -173,6 +173,13 @@ function AssetsTableRow(props: {
   supplied?: number;
   borrowed?: number;
 }) {
+  let iconName = props.assetName.toLowerCase();
+  if (iconName.endsWith(".e") || iconName.endsWith(".b")) {
+    iconName = iconName.slice(0, -2);
+  }
+  if (!(iconName in ASSET_ICONS)) {
+    iconName = "default";
+  }
   return (
     <View
       style={{
@@ -185,11 +192,7 @@ function AssetsTableRow(props: {
       <View style={{ flexDirection: "row", flex: 1 }}>
         <Image
           style={{ width: 24, height: 24, marginRight: 8 }}
-          source={
-            ASSET_ICONS[
-              props.assetName.toLowerCase() as keyof typeof ASSET_ICONS
-            ]
-          }
+          source={ASSET_ICONS[iconName as keyof typeof ASSET_ICONS]}
         />
         <Text style={{ color: "#FFF", fontSize: 14, flex: 1 }}>
           {props.assetName}

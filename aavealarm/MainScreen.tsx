@@ -7,10 +7,13 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { Chain, ChainAccount, IconsPerChain } from "./types";
+import { useEffect, useState } from "react";
+import { getSupabase } from "./supabase";
 
 const styles = StyleSheet.create({
   container: {
@@ -23,7 +26,7 @@ const styles = StyleSheet.create({
 
 const TrashbinIcon = (
   <Image
-    style={{ width: 16, height: 16 }}
+    style={{ width: 16, height: 16, tintColor: "#A5A9BD" }}
     source={require("./assets/trash-bin.png")}
   ></Image>
 );
@@ -44,8 +47,9 @@ const IconButton = (props: { onPress: any; icon: JSX.Element }) => (
   </TouchableOpacity>
 );
 
-const FloatingButton = () => (
+const FloatingButton = (props: { navigation: NavigationProp<any> }) => (
   <TouchableOpacity
+    onPress={() => props.navigation.navigate("Addition")}
     style={{
       backgroundColor: "#EAEBEF",
       borderRadius: 1000,
@@ -60,6 +64,7 @@ const FloatingButton = () => (
       style={{
         width: 24,
         height: 24,
+        tintColor: "#1B2030",
       }}
       source={require("./assets/plus.png")}
     />
@@ -80,7 +85,28 @@ const CHAIN_ICONS: IconsPerChain = {
 function SingleAccount(props: {
   account: ChainAccount;
   onClick: (account: ChainAccount) => void;
+  onDelete: (account: ChainAccount) => void;
 }) {
+  const deleteClickedCallback = () => {
+    Alert.alert(
+      "Delete account",
+      `- Address: ${props.account.address}\n- Chain: ${props.account.chain}\n- Aave V${props.account.aaveVersion}`,
+      [
+        {
+          text: "No",
+          style: "cancel",
+        },
+        {
+          text: "Yes",
+          style: "default",
+          onPress: () => {
+            props.onDelete(props.account);
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <TouchableOpacity
       style={{
@@ -100,7 +126,13 @@ function SingleAccount(props: {
         />
       </View>
       <View style={{ flex: 1 }}>
-        <Text style={{ color: "#FFF" }}>0x4bB...C26</Text>
+        <Text
+          style={{ color: "#FFF", maxWidth: 100 }}
+          ellipsizeMode="middle"
+          numberOfLines={1}
+        >
+          {props.account.address}
+        </Text>
         <Text style={{ color: "#ACACAC" }}>
           {props.account.chain} x Aave V{props.account.aaveVersion}
         </Text>
@@ -116,35 +148,52 @@ function SingleAccount(props: {
           alignItems: "center",
         }}
       >
-        <IconButton onPress={null} icon={TrashbinIcon} />
+        <IconButton onPress={deleteClickedCallback} icon={TrashbinIcon} />
       </View>
     </TouchableOpacity>
   );
 }
 
 export default function MainScreen(props: { navigation: NavigationProp<any> }) {
-  const accounts: ChainAccount[] = [
-    {
-      address: "0x4bBa290826C253BD854121346c370a9886d1bC26",
-      chain: Chain.ETHEREUM,
-      aaveVersion: 3,
-    },
-    {
-      address: "0x4bBa290826C253BD854121346c370a9886d1bC26",
-      chain: Chain.AVALANCHE,
-      aaveVersion: 3,
-    },
-    {
-      address: "0x4bBa290826C253BD854121346c370a9886d1bC26",
-      chain: Chain.POLYGON,
-      aaveVersion: 2,
-    },
-    {
-      address: "0x4bBa290826C253BD854121346c370a9886d1bC26",
-      chain: Chain.ETHEREUM_SEPOLIA,
-      aaveVersion: 3,
-    },
-  ];
+  const [accounts, setAccounts] = useState<ChainAccount[]>([]);
+  const updateTrackedAccounts = () => {
+    getSupabase().then((supabase) => {
+      console.log("fetching accounts from supabase on main screen");
+      supabase
+        .from("account")
+        .select("address, chain, aave_version")
+        .then((res) => {
+          setAccounts(
+            res.data?.map((row) => {
+              return {
+                address: row.address,
+                chain: row.chain,
+                aaveVersion: row.aave_version,
+              };
+            }) || []
+          );
+        });
+    });
+  };
+  useEffect(() => {
+    props.navigation.addListener("focus", updateTrackedAccounts);
+  }, []);
+
+  const onAccountDeletion = (account: ChainAccount) => {
+    getSupabase().then((supabase) => {
+      supabase
+        .from("account")
+        .delete()
+        .eq("address", account.address)
+        .eq("chain", account.chain)
+        .eq("aave_version", account.aaveVersion)
+        .then((res) => {
+          console.log("deleted account", res);
+          updateTrackedAccounts();
+        });
+    });
+  };
+
   return (
     <View
       style={{
@@ -153,7 +202,7 @@ export default function MainScreen(props: { navigation: NavigationProp<any> }) {
         marginTop: 96,
       }}
     >
-      <FloatingButton />
+      <FloatingButton navigation={props.navigation} />
       <SafeAreaView>
         <ScrollView>
           <View
@@ -171,6 +220,7 @@ export default function MainScreen(props: { navigation: NavigationProp<any> }) {
                 onClick={(account) => {
                   props.navigation.navigate("Account", { account: account });
                 }}
+                onDelete={onAccountDeletion}
               />
             ))}
           </View>

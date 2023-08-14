@@ -11,6 +11,13 @@ export enum Chain {
   OPTIMISM = "OPTIMISM",
 }
 
+export const AAVE_V2_CHAINS = [
+  Chain.ETHEREUM,
+  Chain.POLYGON,
+  Chain.POLYGON_MUMBAI,
+  Chain.AVALANCHE,
+];
+
 export interface ChainAccount {
   chain: Chain;
   address: string;

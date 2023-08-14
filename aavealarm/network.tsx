@@ -93,6 +93,34 @@ function getAaveMarket(
       market = markets.AaveV3Polygon;
       chainId = ChainId.polygon;
       break;
+    case chain == Chain.POLYGON_MUMBAI && aaveVersion == 2:
+      market = markets.AaveV2Mumbai;
+      chainId = ChainId.mumbai;
+      break;
+    case chain == Chain.POLYGON_MUMBAI && aaveVersion == 3:
+      market = markets.AaveV3Mumbai;
+      chainId = ChainId.mumbai;
+      break;
+    case chain == Chain.AVALANCHE && aaveVersion == 2:
+      market = markets.AaveV2Avalanche;
+      chainId = ChainId.avalanche;
+      break;
+    case chain == Chain.AVALANCHE && aaveVersion == 3:
+      market = markets.AaveV3Avalanche;
+      chainId = ChainId.avalanche;
+      break;
+    case chain == Chain.ARBITRUM && aaveVersion == 3:
+      market = markets.AaveV3Arbitrum;
+      chainId = ChainId.arbitrum_one;
+      break;
+    case chain == Chain.OPTIMISM && aaveVersion == 3:
+      market = markets.AaveV3Optimism;
+      chainId = ChainId.optimism;
+      break;
+    case chain == Chain.METIS && aaveVersion == 3:
+      market = markets.AaveV3Metis;
+      chainId = ChainId.metis_andromeda;
+      break;
   }
   return [
     market!!.UI_POOL_DATA_PROVIDER,

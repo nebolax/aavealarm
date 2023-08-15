@@ -3,7 +3,6 @@ import {
   Image,
   ImageBackground,
   Text,
-  Touchable,
   TouchableOpacity,
   View,
 } from "react-native";

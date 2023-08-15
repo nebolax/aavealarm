@@ -1,4 +1,4 @@
-import "react-native-url-polyfill/auto";
+import "react-native-url-polyfill/auto"; // required to create supabase client
 import * as SecureStore from "expo-secure-store";
 import { createClient } from "@supabase/supabase-js";
 import uuid from "react-native-uuid";
@@ -21,7 +21,7 @@ const supabaseAnonKey =
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: ExpoSecureStoreAdapter as any,
+    storage: ExpoSecureStoreAdapter,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
@@ -63,10 +63,10 @@ export async function initializeSupabase() {
       console.log("Signed up successfully:", authResponse.data);
       console.log("aaaa appUserId", appUserId);
       await SecureStore.setItemAsync("appUserId", appUserId);
-      console.log("aaaa returned id", authResponse.data.user!!.id);
+      console.log("aaaa returned id", authResponse.data.user!.id);
       await SecureStore.setItemAsync(
         "supabaseUserId",
-        authResponse.data.user!!.id
+        authResponse.data.user!.id
       );
     }
   }

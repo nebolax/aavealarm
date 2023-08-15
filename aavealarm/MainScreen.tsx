@@ -1,28 +1,17 @@
 import {
-  StyleSheet,
   Text,
   View,
   Image,
-  Button,
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { StatusBar } from "expo-status-bar";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "@react-navigation/native";
 import { Chain, ChainAccount, IconsPerChain } from "./types";
 import { useEffect, useState } from "react";
 import { getSupabase } from "./supabase";
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+import { humanizeChainName } from "./utils";
 
 const TrashbinIcon = (
   <Image
@@ -31,7 +20,7 @@ const TrashbinIcon = (
   ></Image>
 );
 
-const IconButton = (props: { onPress: any; icon: JSX.Element }) => (
+const IconButton = (props: { onPress: () => void; icon: JSX.Element }) => (
   <TouchableOpacity
     style={{
       backgroundColor: "#3B3F57",
@@ -47,7 +36,9 @@ const IconButton = (props: { onPress: any; icon: JSX.Element }) => (
   </TouchableOpacity>
 );
 
-const FloatingButton = (props: { navigation: NavigationProp<any> }) => (
+const FloatingButton = (
+  props: { navigation: NavigationProp<any> } // eslint-disable-line
+) => (
   <TouchableOpacity
     onPress={() => props.navigation.navigate("Addition")}
     style={{
@@ -90,7 +81,9 @@ function SingleAccount(props: {
   const deleteClickedCallback = () => {
     Alert.alert(
       "Delete account",
-      `- Address: ${props.account.address}\n- Chain: ${props.account.chain}\n- Aave V${props.account.aaveVersion}`,
+      `- Address: ${props.account.address}\n- Chain: ${humanizeChainName(
+        props.account.chain
+      )}\n- Aave V${props.account.aaveVersion}`,
       [
         {
           text: "No",
@@ -122,7 +115,7 @@ function SingleAccount(props: {
       <View style={{ flex: 1, flexBasis: 48, flexGrow: 0, flexShrink: 0 }}>
         <Image
           style={{ width: 32, height: 32 }}
-          source={CHAIN_ICONS[props.account.chain]}
+          source={CHAIN_ICONS[props.account.chain] as any} // eslint-disable-line
         />
       </View>
       <View style={{ flex: 1 }}>
@@ -134,7 +127,8 @@ function SingleAccount(props: {
           {props.account.address}
         </Text>
         <Text style={{ color: "#ACACAC" }}>
-          {props.account.chain} x Aave V{props.account.aaveVersion}
+          {humanizeChainName(props.account.chain)} x Aave V
+          {props.account.aaveVersion}
         </Text>
       </View>
       <View
@@ -154,7 +148,9 @@ function SingleAccount(props: {
   );
 }
 
-export default function MainScreen(props: { navigation: NavigationProp<any> }) {
+export default function MainScreen(
+  props: { navigation: NavigationProp<any> } // eslint-disable-line
+) {
   const [accounts, setAccounts] = useState<ChainAccount[]>([]);
   const updateTrackedAccounts = () => {
     getSupabase().then((supabase) => {

@@ -1,7 +1,8 @@
 import { Image, Text, View, SafeAreaView, ScrollView } from "react-native";
-import { Chain, ChainAccount, ChainAccountData } from "./types";
+import { ChainAccount, ChainAccountData } from "./types";
 import { queryAccountData } from "./network";
 import { useEffect, useState } from "react";
+import { humanizeChainName } from "./utils";
 
 const ASSET_ICONS = {
   uni: require("./assets/tokens/uni.png"),
@@ -220,13 +221,43 @@ function AssetsTableRow(props: {
   );
 }
 
-export default function Account(props: { route: any }) {
+export default function Account(props: {
+  route: any; // eslint-disable-line
+}) {
   const { account }: { account: ChainAccount } = props.route.params;
   const [accountData, setAccountData] = useState<
     ChainAccountData | undefined
   >();
   useEffect(() => {
-    queryAccountData(account).then((data) => setAccountData(data));
+    queryAccountData(account).then((data) => {
+      // Put used assets higher
+      data.assets.sort((a, b) => {
+        const aUsed =
+          (a.supplied !== undefined && a.supplied > 0) ||
+          (a.borrowed !== undefined && a.borrowed > 0);
+
+        const bUsed =
+          (b.supplied !== undefined && b.supplied > 0) ||
+          (b.borrowed !== undefined && b.borrowed > 0);
+
+        if (aUsed && !bUsed) {
+          return -1;
+        } else if (!aUsed && bUsed) {
+          return 1;
+        }
+        return 0;
+      });
+
+      // Promote GHO
+      const ghoIndex = data.assets.findIndex((asset) => asset.symbol === "GHO");
+      if (ghoIndex !== -1) {
+        const gho = data.assets[ghoIndex];
+        data.assets.splice(ghoIndex, 1);
+        data.assets.unshift(gho);
+      }
+
+      setAccountData(data);
+    });
   }, []);
   return (
     <View
@@ -267,7 +298,7 @@ export default function Account(props: { route: any }) {
                 height: 48,
               }}
             >
-              <AcccountLabel text={account.chain} />
+              <AcccountLabel text={humanizeChainName(account.chain)} />
               <AcccountLabel text="Aave V3" />
             </View>
             <AccountIndicator

@@ -2,7 +2,6 @@ import Checkbox from "expo-checkbox";
 import { useState } from "react";
 import {
   Alert,
-  Button,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -17,11 +16,12 @@ import RadioForm, {
   RadioButtonInput,
   RadioButtonLabel,
 } from "react-native-simple-radio-button";
-import { AAVE_V2_CHAINS, Chain, ChainAccount } from "./types";
+import { AAVE_V2_CHAINS, Chain } from "./types";
 import { ethers } from "ethers";
 import { getSupabase } from "./supabase";
 import { NavigationProp } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
+import { humanizeChainName } from "./utils";
 
 function ChainCheckbox(props: {
   chain: Chain;
@@ -43,12 +43,16 @@ function ChainCheckbox(props: {
         color="#00B8FF"
         style={{ width: 24, height: 24, marginBottom: 16, marginRight: 16 }}
       />
-      <Text style={{ color: "#FFF", fontSize: 24 }}>{props.chain}</Text>
+      <Text style={{ color: "#FFF", fontSize: 24 }}>
+        {humanizeChainName(props.chain)}
+      </Text>
     </View>
   );
 }
 
-export default function Addition(props: { navigation: NavigationProp<any> }) {
+export default function Addition(props: {
+  navigation: NavigationProp<any>; // eslint-disable-line
+}) {
   const [aaveVersion, setAaveVersion] = useState<2 | 3>(2);
   const [selectedChains, setSelectedChains] = useState<Set<Chain>>(new Set());
   const [enteredAddress, setEnteredAddress] = useState("");

@@ -60,7 +60,7 @@ export type RpcsPerChain = {
 };
 
 export type IconsPerChain = {
-  [key in Chain]: any;
+  [key in Chain]: NodeRequire;
 };
 
 export type ReservesMapping = {

@@ -31,7 +31,7 @@ export default function Settings() {
 
   const slidingComplete = () => {
     const valueToSet = parseFloat(
-      (sliderValue!! * MAX_HEALTH_FACTOR).toFixed(2)
+      (sliderValue! * MAX_HEALTH_FACTOR).toFixed(2)
     );
     console.log("value to set", valueToSet, typeof valueToSet);
     SecureStore.getItemAsync("supabaseUserId").then((supabaseUserId) => {
@@ -90,7 +90,7 @@ export default function Settings() {
           {sliderValue !== null && (
             <View>
               <Text style={{ color: "#FFF", marginVertical: 16 }}>
-                {(sliderValue!! * MAX_HEALTH_FACTOR).toFixed(2)}
+                {(sliderValue! * MAX_HEALTH_FACTOR).toFixed(2)}
               </Text>
               <LinearGradient
                 start={{ x: 0, y: 0 }}
@@ -105,7 +105,7 @@ export default function Settings() {
                 <View
                   style={{
                     backgroundColor: "#1B2030",
-                    width: `${(1 - sliderValue!!) * 100}%`,
+                    width: `${(1 - sliderValue!) * 100}%`,
                     height: 15,
                     position: "absolute",
                     top: 0,
@@ -114,7 +114,7 @@ export default function Settings() {
                   }}
                 />
                 <Slider
-                  value={[sliderValue!!]}
+                  value={[sliderValue!]}
                   onValueChange={(value) => setSliderValue(value[0])}
                   onSlidingComplete={slidingComplete}
                   minimumTrackTintColor={"transparent"}

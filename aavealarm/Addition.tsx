@@ -21,6 +21,7 @@ import { AAVE_V2_CHAINS, Chain, ChainAccount } from "./types";
 import { ethers } from "ethers";
 import { getSupabase } from "./supabase";
 import { NavigationProp } from "@react-navigation/native";
+import * as SecureStore from "expo-secure-store";
 
 function ChainCheckbox(props: {
   chain: Chain;
@@ -88,26 +89,28 @@ export default function Addition(props: { navigation: NavigationProp<any> }) {
       return;
     }
 
-    const toBeInserted = Array.from(selectedChains).map((chain) => {
-      return {
-        user_id: "9c25545d-cec8-4efc-8e77-b778889414e7",
-        address: validatedAddress,
-        chain: chain.toString(),
-        aave_version: aaveVersion,
-      };
-    });
-    console.log("aaaa to be inserted:", toBeInserted);
+    SecureStore.getItemAsync("supabaseUserId").then((supabaseUserId) => {
+      const toBeInserted = Array.from(selectedChains).map((chain) => {
+        return {
+          user_id: supabaseUserId,
+          address: validatedAddress,
+          chain: chain.toString(),
+          aave_version: aaveVersion,
+        };
+      });
+      console.log("aaaa to be inserted:", toBeInserted);
 
-    setAdding(true);
-    getSupabase().then((supabase) => {
-      supabase
-        .from("account")
-        .upsert(toBeInserted, { ignoreDuplicates: true })
-        .then((result) => {
-          console.log(result);
-        });
-      setAdding(false);
-      props.navigation.goBack();
+      setAdding(true);
+      getSupabase().then((supabase) => {
+        supabase
+          .from("account")
+          .upsert(toBeInserted, { ignoreDuplicates: true })
+          .then((result) => {
+            console.log(result);
+            setAdding(false);
+            props.navigation.goBack();
+          });
+      });
     });
   };
 
@@ -179,7 +182,7 @@ export default function Addition(props: { navigation: NavigationProp<any> }) {
                       fontSize: 24,
                       color: i === 0 ? "#FFF" : "#BCBCBC",
                       height: 40,
-                      textAlignVertical: "center",
+                      paddingTop: 8,
                     }}
                     labelWrapStyle={{}}
                   />

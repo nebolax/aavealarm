@@ -29,15 +29,27 @@ import { Header } from "./Header";
 import Account from "./Account";
 import Settings from "./Settings";
 import Addition from "./Addition";
+import { getSupabase, initializeSupabase } from "./supabase";
+import * as SecureStore from "expo-secure-store";
 
 OneSignal.setAppId(Constants.expoConfig.extra.oneSignalAppId);
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  initializeSupabase();
   OneSignal.getDeviceState().then((state) => {
-    console.log("aaaa onesignal user id:", state?.userId);
+    getSupabase().then((supabase) => {
+      SecureStore.getItemAsync("supabaseUserId").then((supabaseUserId) => {
+        supabase
+          .from("user")
+          .update({ onesignal_id: state?.userId })
+          .eq("user_id", supabaseUserId)
+          .then((res) => {
+            console.log("aaaa res:", res);
+          });
+      });
+    });
   });
-  OneSignal.promptForPushNotificationsWithUserResponse();
   return (
     <NavigationContainer>
       <Stack.Navigator

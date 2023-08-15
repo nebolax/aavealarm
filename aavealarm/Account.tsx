@@ -113,6 +113,7 @@ function AcccountLabel(props: { text: string }) {
         fontSize: 16,
         textAlign: "center",
         textAlignVertical: "center",
+        lineHeight: 48,
         backgroundColor: "#373B51",
       }}
     >
@@ -176,6 +177,8 @@ function AssetsTableRow(props: {
   let iconName = props.assetName.toLowerCase();
   if (iconName.endsWith(".e") || iconName.endsWith(".b")) {
     iconName = iconName.slice(0, -2);
+  } else if (iconName.startsWith("m.")) {
+    iconName = iconName.slice(2);
   }
   if (!(iconName in ASSET_ICONS)) {
     iconName = "default";

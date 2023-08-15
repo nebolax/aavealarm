@@ -28,10 +28,14 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
-async function initializeSupabase() {
+let supabaseInitialized = false;
+
+export async function initializeSupabase() {
+  console.log("Initializing supabase");
   const currentSession = (await supabase.auth.getUser()).data.user;
   console.log("Supabase user id", currentSession?.id);
   if (currentSession) {
+    supabaseInitialized = true;
     return;
   }
   let appUserId = await SecureStore.getItemAsync("appUserId");
@@ -48,7 +52,6 @@ async function initializeSupabase() {
   } else {
     console.log("Creating new appUserId..");
     appUserId = uuid.v4().toString();
-    await SecureStore.setItemAsync("appUserId:", appUserId);
 
     const authResponse = await supabase.auth.signUp({
       email: `${appUserId}@aavealarm.com`,
@@ -58,12 +61,22 @@ async function initializeSupabase() {
       console.error("Error signing up:", authResponse.error);
     } else {
       console.log("Signed up successfully:", authResponse.data);
+      console.log("aaaa appUserId", appUserId);
+      await SecureStore.setItemAsync("appUserId", appUserId);
+      console.log("aaaa returned id", authResponse.data.user!!.id);
+      await SecureStore.setItemAsync(
+        "supabaseUserId",
+        authResponse.data.user!!.id
+      );
     }
   }
+  supabaseInitialized = true;
 }
 
 export async function getSupabase() {
-  console.log("getSupabase");
-  await initializeSupabase(); // make sure that the user is logged in
+  console.log("aaa supabaseInitialized", supabaseInitialized);
+  while (!supabaseInitialized) {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
   return supabase;
 }

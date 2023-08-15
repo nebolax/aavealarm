@@ -20,14 +20,6 @@
 		E613AF4CFFC5492F8C166217 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3552E1A3BC4B4958B85BD418 /* noop-file.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		BAE631043C6B4CE89119E7D3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 3794A20C6D84405BB1DE6669 /* OneSignalNotificationServiceExtension */;
-			targetProxy = 5BE04F9EC8D8438EBDB7ACE0 /* PBXContainerItemProxy */;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
 		2CDCA7C1336B447F8A160A03 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -88,6 +80,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		07E7E97D1CF243C5A497FB86 /* OneSignalNotificationServiceExtension */ = {
+			isa = PBXGroup;
+			children = (
+				E673FB40F04F4574A939524D /* NotificationService.h */,
+				D685A03138EF4D31B30BA94C /* OneSignalNotificationServiceExtension.entitlements */,
+				F2906C2C97C24289A5B294E0 /* OneSignalNotificationServiceExtension-Info.plist */,
+				F2F72D0C6CF9458FBCB69E18 /* NotificationService.m */,
+			);
+			name = OneSignalNotificationServiceExtension;
+			path = OneSignalNotificationServiceExtension;
+			sourceTree = "<group>";
+		};
 		13B07FAE1A68108700A75B9A /* aavealarm */ = {
 			isa = PBXGroup;
 			children = (
@@ -112,6 +116,30 @@
 				CF2A2690FA04AD7EB5FEA96C /* libPods-OneSignalNotificationServiceExtension.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		615DF55731BA4C92827EA55D /* OneSignalNotificationServiceExtension */ = {
+			isa = PBXGroup;
+			children = (
+				E673FB40F04F4574A939524D /* NotificationService.h */,
+				D685A03138EF4D31B30BA94C /* OneSignalNotificationServiceExtension.entitlements */,
+				F2906C2C97C24289A5B294E0 /* OneSignalNotificationServiceExtension-Info.plist */,
+				F2F72D0C6CF9458FBCB69E18 /* NotificationService.m */,
+			);
+			name = OneSignalNotificationServiceExtension;
+			path = OneSignalNotificationServiceExtension;
+			sourceTree = "<group>";
+		};
+		6DA1135824EF4D8BBEFE6ECB /* OneSignalNotificationServiceExtension */ = {
+			isa = PBXGroup;
+			children = (
+				E673FB40F04F4574A939524D /* NotificationService.h */,
+				D685A03138EF4D31B30BA94C /* OneSignalNotificationServiceExtension.entitlements */,
+				F2906C2C97C24289A5B294E0 /* OneSignalNotificationServiceExtension-Info.plist */,
+				F2F72D0C6CF9458FBCB69E18 /* NotificationService.m */,
+			);
+			name = OneSignalNotificationServiceExtension;
+			path = OneSignalNotificationServiceExtension;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -159,6 +187,18 @@
 			name = aavealarm;
 			sourceTree = "<group>";
 		};
+		9942102EA1754EC8AB6253C1 /* OneSignalNotificationServiceExtension */ = {
+			isa = PBXGroup;
+			children = (
+				E673FB40F04F4574A939524D /* NotificationService.h */,
+				D685A03138EF4D31B30BA94C /* OneSignalNotificationServiceExtension.entitlements */,
+				F2906C2C97C24289A5B294E0 /* OneSignalNotificationServiceExtension-Info.plist */,
+				F2F72D0C6CF9458FBCB69E18 /* NotificationService.m */,
+			);
+			name = OneSignalNotificationServiceExtension;
+			path = OneSignalNotificationServiceExtension;
+			sourceTree = "<group>";
+		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
@@ -166,6 +206,18 @@
 			);
 			name = Supporting;
 			path = aavealarm/Supporting;
+			sourceTree = "<group>";
+		};
+		CB7D5643E4094D6E8A191F89 /* OneSignalNotificationServiceExtension */ = {
+			isa = PBXGroup;
+			children = (
+				E673FB40F04F4574A939524D /* NotificationService.h */,
+				D685A03138EF4D31B30BA94C /* OneSignalNotificationServiceExtension.entitlements */,
+				F2906C2C97C24289A5B294E0 /* OneSignalNotificationServiceExtension-Info.plist */,
+				F2F72D0C6CF9458FBCB69E18 /* NotificationService.m */,
+			);
+			name = OneSignalNotificationServiceExtension;
+			path = OneSignalNotificationServiceExtension;
 			sourceTree = "<group>";
 		};
 		CE14B8655460445288BE7276 /* OneSignalNotificationServiceExtension */ = {
@@ -203,66 +255,6 @@
 				92DBD88DE9BF7D494EA9DA96 /* aavealarm */,
 			);
 			name = ExpoModulesProviders;
-			sourceTree = "<group>";
-		};
-		CB7D5643E4094D6E8A191F89 /* OneSignalNotificationServiceExtension */ = {
-			isa = PBXGroup;
-			children = (
-				E673FB40F04F4574A939524D /* NotificationService.h */,
-				D685A03138EF4D31B30BA94C /* OneSignalNotificationServiceExtension.entitlements */,
-				F2906C2C97C24289A5B294E0 /* OneSignalNotificationServiceExtension-Info.plist */,
-				F2F72D0C6CF9458FBCB69E18 /* NotificationService.m */,
-			);
-			name = OneSignalNotificationServiceExtension;
-			path = OneSignalNotificationServiceExtension;
-			sourceTree = "<group>";
-		};
-		07E7E97D1CF243C5A497FB86 /* OneSignalNotificationServiceExtension */ = {
-			isa = PBXGroup;
-			children = (
-				E673FB40F04F4574A939524D /* NotificationService.h */,
-				D685A03138EF4D31B30BA94C /* OneSignalNotificationServiceExtension.entitlements */,
-				F2906C2C97C24289A5B294E0 /* OneSignalNotificationServiceExtension-Info.plist */,
-				F2F72D0C6CF9458FBCB69E18 /* NotificationService.m */,
-			);
-			name = OneSignalNotificationServiceExtension;
-			path = OneSignalNotificationServiceExtension;
-			sourceTree = "<group>";
-		};
-		615DF55731BA4C92827EA55D /* OneSignalNotificationServiceExtension */ = {
-			isa = PBXGroup;
-			children = (
-				E673FB40F04F4574A939524D /* NotificationService.h */,
-				D685A03138EF4D31B30BA94C /* OneSignalNotificationServiceExtension.entitlements */,
-				F2906C2C97C24289A5B294E0 /* OneSignalNotificationServiceExtension-Info.plist */,
-				F2F72D0C6CF9458FBCB69E18 /* NotificationService.m */,
-			);
-			name = OneSignalNotificationServiceExtension;
-			path = OneSignalNotificationServiceExtension;
-			sourceTree = "<group>";
-		};
-		9942102EA1754EC8AB6253C1 /* OneSignalNotificationServiceExtension */ = {
-			isa = PBXGroup;
-			children = (
-				E673FB40F04F4574A939524D /* NotificationService.h */,
-				D685A03138EF4D31B30BA94C /* OneSignalNotificationServiceExtension.entitlements */,
-				F2906C2C97C24289A5B294E0 /* OneSignalNotificationServiceExtension-Info.plist */,
-				F2F72D0C6CF9458FBCB69E18 /* NotificationService.m */,
-			);
-			name = OneSignalNotificationServiceExtension;
-			path = OneSignalNotificationServiceExtension;
-			sourceTree = "<group>";
-		};
-		6DA1135824EF4D8BBEFE6ECB /* OneSignalNotificationServiceExtension */ = {
-			isa = PBXGroup;
-			children = (
-				E673FB40F04F4574A939524D /* NotificationService.h */,
-				D685A03138EF4D31B30BA94C /* OneSignalNotificationServiceExtension.entitlements */,
-				F2906C2C97C24289A5B294E0 /* OneSignalNotificationServiceExtension-Info.plist */,
-				F2F72D0C6CF9458FBCB69E18 /* NotificationService.m */,
-			);
-			name = OneSignalNotificationServiceExtension;
-			path = OneSignalNotificationServiceExtension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -538,7 +530,6 @@
 		BAE631043C6B4CE89119E7D3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3794A20C6D84405BB1DE6669 /* OneSignalNotificationServiceExtension */;
-			targetProxy = 5BE04F9EC8D8438EBDB7ACE0 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -567,7 +558,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.aavealarm;
-				PRODUCT_NAME = "aavealarm";
+				PRODUCT_NAME = aavealarm;
 				SWIFT_OBJC_BRIDGING_HEADER = "aavealarm/aavealarm-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -595,7 +586,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.aavealarm;
-				PRODUCT_NAME = "aavealarm";
+				PRODUCT_NAME = aavealarm;
 				SWIFT_OBJC_BRIDGING_HEADER = "aavealarm/aavealarm-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

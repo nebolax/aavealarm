@@ -176,7 +176,7 @@ export async function queryAccountData(
   if (healthFactorRaw.eq(ethers.constants.MaxUint256)) {
     healthFactor = -1;
   } else {
-    healthFactor = healthFactorRaw.toNumber() / 1e18;
+    healthFactor = healthFactorRaw.div(BigNumber.from(10).pow(18)).toNumber();
   }
 
   const poolDataProviderContract = new UiPoolDataProvider({

@@ -127,6 +127,7 @@ export async function queryAccountData(
       provider
     );
   }
+  console.log("aaaa lending pool", lendingPoolContract.address);
   const userAccountData = await lendingPoolContract.getUserAccountData(
     account.address
   );
@@ -137,7 +138,9 @@ export async function queryAccountData(
   if (healthFactorRaw.eq(ethers.constants.MaxUint256)) {
     healthFactor = -1;
   } else {
-    healthFactor = healthFactorRaw.div(BigNumber.from(10).pow(18)).toNumber();
+    const decimalsConstant = BigNumber.from(10).pow(18);
+    healthFactor =
+      healthFactorRaw.mul(100).div(decimalsConstant).toNumber() / 100;
   }
 
   const poolDataProviderContract = new UiPoolDataProvider({

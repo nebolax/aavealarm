@@ -1,5 +1,5 @@
 import { Text, View, SafeAreaView, ScrollView } from "react-native";
-import { ChainAccount, ChainAccountData } from "./types";
+import { ChainAccount, ChainAccountData, SingleAssetUsageInfo } from "./types";
 import { queryAccountData } from "./network";
 import { useEffect, useState } from "react";
 import { formatNumber, humanizeChainName } from "./utils";
@@ -148,6 +148,35 @@ function AssetsTableRow(props: {
   );
 }
 
+function getAssetPriority(asset: SingleAssetUsageInfo): number {
+  // Lower the number - greater the priority
+  // Priority is the following:
+  // 1. GHO if exists
+  // 2. Assets that are both sipplied and borrowed (unlikely, but theoretically can happen)
+  // 3. Only supplied assets
+  // 4. Only borrowed assets
+  // 5. Assets that can be both supplied & borrowed
+  // 6. Only suppliable assets
+  // 7. Only borrowable assets
+  if (asset.symbol == "GHO") return 1;
+  if (
+    asset.supplied !== undefined &&
+    asset.supplied > 0 &&
+    asset.borrowed !== undefined &&
+    asset.borrowed > 0
+  )
+    return 2;
+
+  if (asset.supplied !== undefined && asset.supplied > 0) return 3;
+  if (asset.borrowed !== undefined && asset.borrowed > 0) return 4;
+
+  if (asset.supplied !== undefined && asset.borrowed !== undefined) return 5;
+  if (asset.supplied !== undefined) return 6;
+  if (asset.borrowed !== undefined) return 7;
+
+  return 8;
+}
+
 export default function Account(props: {
   route: any; // eslint-disable-line
 }) {
@@ -156,33 +185,10 @@ export default function Account(props: {
     ChainAccountData | undefined
   >();
   useEffect(() => {
-    // load account data
     queryAccountData(account).then((data) => {
-      // Put used assets higher
       data.assets.sort((a, b) => {
-        const aUsed =
-          (a.supplied !== undefined && a.supplied > 0) ||
-          (a.borrowed !== undefined && a.borrowed > 0);
-
-        const bUsed =
-          (b.supplied !== undefined && b.supplied > 0) ||
-          (b.borrowed !== undefined && b.borrowed > 0);
-
-        if (aUsed && !bUsed) {
-          return -1;
-        } else if (!aUsed && bUsed) {
-          return 1;
-        }
-        return 0;
+        return getAssetPriority(a) - getAssetPriority(b);
       });
-
-      // Promote GHO
-      const ghoIndex = data.assets.findIndex((asset) => asset.symbol === "GHO");
-      if (ghoIndex !== -1) {
-        const gho = data.assets[ghoIndex];
-        data.assets.splice(ghoIndex, 1);
-        data.assets.unshift(gho);
-      }
 
       setAccountData(data);
     });

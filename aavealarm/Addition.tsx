@@ -231,7 +231,7 @@ export default function Addition(props: {
             right: 16,
           }}
         >
-          <Text style={{ textAlign: "center", fontSize: 22 }}>
+          <Text style={{ textAlign: "center", fontSize: 20 }}>
             {adding ? "Adding..." : "Add"}
           </Text>
         </TouchableOpacity>

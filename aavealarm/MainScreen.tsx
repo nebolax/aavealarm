@@ -8,21 +8,22 @@ import {
   Alert,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
-import { Chain, ChainAccount, IconsPerChain } from "./types";
+import { Chain, ChainAccount } from "./types";
 import { useEffect, useState } from "react";
 import { getSupabase } from "./supabase";
 import { humanizeChainName } from "./utils";
+import { SvgUri } from "react-native-svg";
 
-const CHAIN_ICONS: IconsPerChain = {
-  [Chain.ETHEREUM]: require("./assets/chains/ethereum.png"),
-  [Chain.AVALANCHE]: require("./assets/chains/avalanche.png"),
-  [Chain.POLYGON]: require("./assets/chains/polygon.png"),
-  [Chain.ETHEREUM_SEPOLIA]: require("./assets/chains/ethereum.png"),
-  [Chain.POLYGON_MUMBAI]: require("./assets/chains/polygon.png"),
-  [Chain.ARBITRUM]: require("./assets/chains/arbitrum.png"),
-  [Chain.OPTIMISM]: require("./assets/chains/optimism.png"),
-  [Chain.METIS]: require("./assets/chains/metis.png"),
-};
+function getChainIconName(chain: Chain) {
+  switch (chain) {
+    case Chain.ETHEREUM_SEPOLIA:
+      return "ethereum";
+    case Chain.POLYGON_MUMBAI:
+      return "polygon";
+    default:
+      return chain.toLowerCase();
+  }
+}
 
 const TrashbinIcon = (
   <Image
@@ -115,9 +116,13 @@ function SingleAccount(props: {
       }}
     >
       <View style={{ flex: 1, flexBasis: 48, flexGrow: 0, flexShrink: 0 }}>
-        <Image
-          style={{ width: 32, height: 32 }}
-          source={CHAIN_ICONS[props.account.chain] as any} // eslint-disable-line
+        <SvgUri
+          width={32}
+          height={32}
+          viewBox="0 0 24 24"
+          uri={`https://app.aave.com/icons/networks/${getChainIconName(
+            props.account.chain
+          )}.svg`}
         />
       </View>
       <View style={{ flex: 1 }}>
@@ -197,7 +202,7 @@ export default function MainScreen(
       style={{
         flex: 1,
         backgroundColor: "#1B2030",
-        marginTop: 76,
+        marginTop: 88,
         zIndex: 100,
       }}
     >

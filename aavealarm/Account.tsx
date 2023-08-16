@@ -1,105 +1,31 @@
-import { Image, Text, View, SafeAreaView, ScrollView } from "react-native";
+import { Text, View, SafeAreaView, ScrollView } from "react-native";
 import { ChainAccount, ChainAccountData } from "./types";
 import { queryAccountData } from "./network";
 import { useEffect, useState } from "react";
 import { formatNumber, humanizeChainName } from "./utils";
-
-// react native requires explicit import of all assets
-const ASSET_ICONS = {
-  uni: require("./assets/tokens/uni.png"),
-  snx: require("./assets/tokens/snx.png"),
-  mkr: require("./assets/tokens/mkr.png"),
-  xsushi: require("./assets/tokens/xsushi.png"),
-  busd: require("./assets/tokens/busd.png"),
-  stmatic: require("./assets/tokens/stmatic.png"),
-  renfil: require("./assets/tokens/renfil.png"),
-  ftm: require("./assets/tokens/ftm.png"),
-  zrx: require("./assets/tokens/zrx.png"),
-  matic: require("./assets/tokens/matic.png"),
-  bal: require("./assets/tokens/bal.png"),
-  lusd: require("./assets/tokens/lusd.png"),
-  ren: require("./assets/tokens/ren.png"),
-  lend: require("./assets/tokens/lend.png"),
-  tusd: require("./assets/tokens/tusd.png"),
-  savax: require("./assets/tokens/savax.png"),
-  dai: require("./assets/tokens/dai.png"),
-  maticx: require("./assets/tokens/maticx.png"),
-  wmatic: require("./assets/tokens/wmatic.png"),
-  link: require("./assets/tokens/link.png"),
-  wbtc: require("./assets/tokens/wbtc.png"),
-  rpl: require("./assets/tokens/rpl.png"),
-  stkaave: require("./assets/tokens/stkaave.png"),
-  usdp: require("./assets/tokens/usdp.png"),
-  steth: require("./assets/tokens/steth.png"),
-  avax: require("./assets/tokens/avax.png"),
-  wsteth: require("./assets/tokens/wsteth.png"),
-  bpt: require("./assets/tokens/bpt.png"),
-  ust: require("./assets/tokens/ust.png"),
-  wone: require("./assets/tokens/wone.png"),
-  reth: require("./assets/tokens/reth.png"),
-  eth: require("./assets/tokens/eth.png"),
-  metis: require("./assets/tokens/metis.png"),
-  "1inch": require("./assets/tokens/1inch.png"),
-  ldo: require("./assets/tokens/ldo.png"),
-  ens: require("./assets/tokens/ens.png"),
-  yfi: require("./assets/tokens/yfi.png"),
-  usdt: require("./assets/tokens/usdt.png"),
-  usdc: require("./assets/tokens/usdc.png"),
-  tribe: require("./assets/tokens/tribe.png"),
-  sd: require("./assets/tokens/sd.png"),
-  cbeth: require("./assets/tokens/cbeth.png"),
-  enj: require("./assets/tokens/enj.png"),
-  weth: require("./assets/tokens/weth.png"),
-  rai: require("./assets/tokens/rai.png"),
-  guni: require("./assets/tokens/guni.png"),
-  mai: require("./assets/tokens/mai.png"),
-  aave: require("./assets/tokens/aave.png"),
-  dpi: require("./assets/tokens/dpi.png"),
-  cvx: require("./assets/tokens/cvx.png"),
-  pax: require("./assets/tokens/pax.png"),
-  one: require("./assets/tokens/one.png"),
-  jeur: require("./assets/tokens/jeur.png"),
-  fei: require("./assets/tokens/fei.png"),
-  frax: require("./assets/tokens/frax.png"),
-  knc: require("./assets/tokens/knc.png"),
-  mana: require("./assets/tokens/mana.png"),
-  sushi: require("./assets/tokens/sushi.png"),
-  bat: require("./assets/tokens/bat.png"),
-  btc: require("./assets/tokens/btc.png"),
-  ampl: require("./assets/tokens/ampl.png"),
-  crv: require("./assets/tokens/crv.png"),
-  op: require("./assets/tokens/op.png"),
-  ageur: require("./assets/tokens/ageur.png"),
-  arb: require("./assets/tokens/arb.png"),
-  stkbpt: require("./assets/tokens/stkbpt.png"),
-  gusd: require("./assets/tokens/gusd.png"),
-  default: require("./assets/tokens/default.png"),
-  rep: require("./assets/tokens/rep.png"),
-  eurs: require("./assets/tokens/eurs.png"),
-  susd: require("./assets/tokens/susd.png"),
-  ghst: require("./assets/tokens/ghst.png"),
-  gho: require("./assets/tokens/gho.png"),
-  wftm: require("./assets/tokens/wftm.png"),
-  seth: require("./assets/tokens/seth.png"),
-  wavax: require("./assets/tokens/wavax.png"),
-};
+import { SvgUri } from "react-native-svg";
 
 function AcccountLabel(props: { text: string }) {
   return (
-    <Text
+    <View
       style={{
         flex: 1,
-        color: "#FFF",
-        fontSize: 16,
-        textAlign: "center",
-        textAlignVertical: "center",
-        lineHeight: 48,
         backgroundColor: "#373B51",
         borderRadius: 10,
       }}
     >
-      {props.text}
-    </Text>
+      <Text
+        style={{
+          color: "#FFF",
+          fontSize: 16,
+          textAlign: "center",
+          textAlignVertical: "center",
+          lineHeight: 48,
+        }}
+      >
+        {props.text}
+      </Text>
+    </View>
   );
 }
 
@@ -166,9 +92,6 @@ function AssetsTableRow(props: {
   } else if (iconName.startsWith("m.")) {
     iconName = iconName.slice(2);
   }
-  if (!(iconName in ASSET_ICONS)) {
-    iconName = "default";
-  }
   return (
     <View
       style={{
@@ -178,12 +101,22 @@ function AssetsTableRow(props: {
         padding: 16,
       }}
     >
-      <View style={{ flexDirection: "row", flex: 1 }}>
-        <Image
-          style={{ width: 24, height: 24, marginRight: 8 }}
-          source={ASSET_ICONS[iconName as keyof typeof ASSET_ICONS]}
+      <View style={{ flexDirection: "row", flex: 1.7 }}>
+        <SvgUri
+          width={32}
+          height={32}
+          style={{ marginRight: 12 }}
+          uri={`https://app.aave.com/icons/tokens/${iconName}.svg`}
         />
-        <Text style={{ color: "#FFF", fontSize: 14, flex: 1 }}>
+        <Text
+          style={{
+            color: "#FFF",
+            fontSize: 14,
+            flex: 1,
+            textAlignVertical: "center",
+            lineHeight: 32,
+          }}
+        >
           {props.assetName}
         </Text>
       </View>
@@ -193,12 +126,21 @@ function AssetsTableRow(props: {
           fontSize: 14,
           flex: 1,
           paddingLeft: 32,
+          textAlignVertical: "center",
+          lineHeight: 32,
         }}
       >
         {formatNumber(props.supplied)}
       </Text>
       <Text
-        style={{ color: "#ACACAC", fontSize: 14, flex: 1, textAlign: "right" }}
+        style={{
+          color: "#ACACAC",
+          fontSize: 14,
+          flex: 1,
+          textAlign: "right",
+          textAlignVertical: "center",
+          lineHeight: 32,
+        }}
       >
         {formatNumber(props.borrowed)}
       </Text>
@@ -250,7 +192,7 @@ export default function Account(props: {
       style={{
         flex: 1,
         backgroundColor: "#1B2030",
-        marginTop: 76,
+        marginTop: 88,
       }}
     >
       <SafeAreaView>
@@ -268,6 +210,7 @@ export default function Account(props: {
                 textAlign: "center",
                 padding: 16,
                 paddingTop: 0,
+                paddingHorizontal: 64,
               }}
               ellipsizeMode="middle"
               numberOfLines={1}

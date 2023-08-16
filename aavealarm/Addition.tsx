@@ -41,12 +41,12 @@ function ChainCheckbox(props: {
           props.chainChangeCallback(props.chain);
         }}
         color="#00B8FF"
-        style={{ width: 24, height: 24, marginBottom: 16, marginRight: 16 }}
+        style={{ width: 24, height: 24, marginBottom: 18, marginRight: 16 }}
       />
       <Text
         style={{
           color: props.selectedChains.has(props.chain) ? "#FFF" : "#BCBCBC",
-          fontSize: 24,
+          fontSize: 20,
         }}
       >
         {humanizeChainName(props.chain)}
@@ -126,7 +126,7 @@ export default function Addition(props: {
       style={{
         flex: 1,
         backgroundColor: "#1B2030",
-        marginTop: 76,
+        marginTop: 88,
         padding: 24,
       }}
     >
@@ -177,8 +177,8 @@ export default function Addition(props: {
                     onPress={changeAaveVersion}
                     buttonInnerColor="#00B8FF"
                     buttonOuterColor={i === 0 ? "#60ABC8" : "#3F4865"}
-                    buttonSize={16}
-                    buttonOuterSize={32}
+                    buttonSize={15}
+                    buttonOuterSize={30}
                   />
                   <RadioButtonLabel
                     obj={obj}
@@ -186,7 +186,7 @@ export default function Addition(props: {
                     labelHorizontal={true}
                     onPress={changeAaveVersion}
                     labelStyle={{
-                      fontSize: 24,
+                      fontSize: 20,
                       color: i === 0 ? "#FFF" : "#BCBCBC",
                       height: 40,
                       paddingTop: 8,
@@ -200,10 +200,10 @@ export default function Addition(props: {
               style={{
                 borderColor: "#4A4F6C",
                 borderWidth: 1,
-                marginBottom: 24,
+                marginBottom: 26,
               }}
             />
-            <Text style={{ color: "#FFF", fontSize: 20, marginBottom: 24 }}>
+            <Text style={{ color: "#FFF", fontSize: 20, marginBottom: 26 }}>
               Chains
             </Text>
             {Object.values(aaveVersion === 2 ? AAVE_V2_CHAINS : Chain).map(

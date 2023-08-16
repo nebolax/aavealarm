@@ -13,7 +13,7 @@ export function Header(props: { title: string }) {
   return (
     <View style={{ flex: 1, zIndex: 1 }}>
       <ImageBackground
-        style={{ height: 96 }}
+        style={{ height: 112 }}
         resizeMode="stretch"
         source={require("./assets/header-background.png")}
       >

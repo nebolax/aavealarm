@@ -54,10 +54,6 @@ export type RpcsPerChain = {
   [key in Chain]: string;
 };
 
-export type IconsPerChain = {
-  [key in Chain]: NodeRequire;
-};
-
 export type ReservesMapping = {
   [key: string]: ReserveDataHumanized;
 };

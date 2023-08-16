@@ -38,7 +38,8 @@ export default function Settings() {
           .update({
             health_factor_threshold: valueToSet,
           })
-          .eq("user_id", supabaseUserId);
+          .eq("user_id", supabaseUserId)
+          .then(); // just to await the execution of the query
       });
     });
   };
@@ -48,7 +49,7 @@ export default function Settings() {
       style={{
         flex: 1,
         backgroundColor: "#1B2030",
-        marginTop: 76,
+        marginTop: 88,
         padding: 16,
       }}
     >

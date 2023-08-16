@@ -46,11 +46,6 @@ export interface SingleChainAaveTokenInfo {
   variableDebtToken?: string;
 }
 
-export interface X {
-  v2: string;
-  // v3: string;
-}
-
 export type AaveLendingPoolsPerChain = {
   [key in Chain]: { v2?: string; v3?: string };
 };

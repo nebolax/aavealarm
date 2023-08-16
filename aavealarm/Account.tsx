@@ -2,8 +2,9 @@ import { Image, Text, View, SafeAreaView, ScrollView } from "react-native";
 import { ChainAccount, ChainAccountData } from "./types";
 import { queryAccountData } from "./network";
 import { useEffect, useState } from "react";
-import { humanizeChainName } from "./utils";
+import { formatNumber, humanizeChainName } from "./utils";
 
+// react native requires explicit import of all assets
 const ASSET_ICONS = {
   uni: require("./assets/tokens/uni.png"),
   snx: require("./assets/tokens/snx.png"),
@@ -83,28 +84,6 @@ const ASSET_ICONS = {
   wavax: require("./assets/tokens/wavax.png"),
 };
 
-function formatNumber(num: number | undefined): string {
-  if (num === undefined) {
-    return "-";
-  }
-  if (num === 0) {
-    return "0";
-  }
-  let result = "$";
-  if (num < 1e3) {
-    result += num.toFixed(1);
-  } else if (num < 1e6) {
-    result += (num / 1e3).toFixed(1) + "k";
-  } else if (num < 1e9) {
-    result += (num / 1e6).toFixed(1) + "m";
-  } else if (num < 1e12) {
-    result += (num / 1e9).toFixed(1) + "b";
-  } else {
-    result += (num / 1e12).toFixed(1) + "t";
-  }
-  return result;
-}
-
 function AcccountLabel(props: { text: string }) {
   return (
     <Text
@@ -116,6 +95,7 @@ function AcccountLabel(props: { text: string }) {
         textAlignVertical: "center",
         lineHeight: 48,
         backgroundColor: "#373B51",
+        borderRadius: 10,
       }}
     >
       {props.text}
@@ -152,6 +132,7 @@ function AssetsTableHeaderFooter(props: {
   value1: string;
   value2: string;
   value3: string;
+  isHeader?: boolean;
 }) {
   return (
     <View
@@ -161,6 +142,10 @@ function AssetsTableHeaderFooter(props: {
         flexDirection: "row",
         justifyContent: "space-between",
         padding: 16,
+        borderTopLeftRadius: props.isHeader ? 12 : 0,
+        borderTopRightRadius: props.isHeader ? 12 : 0,
+        borderBottomLeftRadius: props.isHeader ? 0 : 12,
+        borderBottomRightRadius: props.isHeader ? 0 : 12,
       }}
     >
       <Text style={{ color: "#FFF", fontSize: 14 }}>{props.value1}</Text>
@@ -229,6 +214,7 @@ export default function Account(props: {
     ChainAccountData | undefined
   >();
   useEffect(() => {
+    // load account data
     queryAccountData(account).then((data) => {
       // Put used assets higher
       data.assets.sort((a, b) => {
@@ -264,7 +250,7 @@ export default function Account(props: {
       style={{
         flex: 1,
         backgroundColor: "#1B2030",
-        marginTop: 96,
+        marginTop: 76,
       }}
     >
       <SafeAreaView>
@@ -317,6 +303,7 @@ export default function Account(props: {
               value1="Asset"
               value2="Supplied"
               value3="Borrowed"
+              isHeader={true}
             />
             <View style={{ backgroundColor: "#2B2E40" }}>
               {accountData?.assets.map((assetData, index) => (
@@ -332,6 +319,7 @@ export default function Account(props: {
               value1="Total"
               value2={formatNumber(accountData?.totalSupplied)}
               value3={formatNumber(accountData?.totalBorrowed)}
+              isHeader={false}
             />
           </View>
         </ScrollView>

@@ -43,7 +43,12 @@ function ChainCheckbox(props: {
         color="#00B8FF"
         style={{ width: 24, height: 24, marginBottom: 16, marginRight: 16 }}
       />
-      <Text style={{ color: "#FFF", fontSize: 24 }}>
+      <Text
+        style={{
+          color: props.selectedChains.has(props.chain) ? "#FFF" : "#BCBCBC",
+          fontSize: 24,
+        }}
+      >
         {humanizeChainName(props.chain)}
       </Text>
     </View>
@@ -102,15 +107,13 @@ export default function Addition(props: {
           aave_version: aaveVersion,
         };
       });
-      console.log("aaaa to be inserted:", toBeInserted);
 
       setAdding(true);
       getSupabase().then((supabase) => {
         supabase
           .from("account")
           .upsert(toBeInserted, { ignoreDuplicates: true })
-          .then((result) => {
-            console.log(result);
+          .then(() => {
             setAdding(false);
             props.navigation.goBack();
           });
@@ -123,7 +126,7 @@ export default function Addition(props: {
       style={{
         flex: 1,
         backgroundColor: "#1B2030",
-        marginTop: 96,
+        marginTop: 76,
         padding: 24,
       }}
     >
@@ -213,7 +216,6 @@ export default function Addition(props: {
                 />
               )
             )}
-            {/* <View style={{ height: 96 }} /> */}
           </ScrollView>
         </SafeAreaView>
         <TouchableOpacity

@@ -19,10 +19,8 @@ export default function Settings() {
           .eq("user_id", supabaseUserId)
           .then(({ data, error }) => {
             if (error) {
-              console.error(error);
               return;
             }
-            console.log(data);
             setSliderValue(data[0].health_factor_threshold / MAX_HEALTH_FACTOR);
           });
       });
@@ -33,7 +31,6 @@ export default function Settings() {
     const valueToSet = parseFloat(
       (sliderValue! * MAX_HEALTH_FACTOR).toFixed(2)
     );
-    console.log("value to set", valueToSet, typeof valueToSet);
     SecureStore.getItemAsync("supabaseUserId").then((supabaseUserId) => {
       getSupabase().then((supabase) => {
         supabase
@@ -41,15 +38,7 @@ export default function Settings() {
           .update({
             health_factor_threshold: valueToSet,
           })
-          .eq("user_id", supabaseUserId)
-          .select("*")
-          .then(({ data, error }) => {
-            if (error) {
-              console.error(error);
-              return;
-            }
-            console.log(data);
-          });
+          .eq("user_id", supabaseUserId);
       });
     });
   };
@@ -59,7 +48,7 @@ export default function Settings() {
       style={{
         flex: 1,
         backgroundColor: "#1B2030",
-        marginTop: 96,
+        marginTop: 76,
         padding: 16,
       }}
     >
@@ -67,6 +56,7 @@ export default function Settings() {
         style={{
           padding: 4,
           backgroundColor: "#35394E",
+          borderRadius: 16,
         }}
       >
         <Text
@@ -85,6 +75,7 @@ export default function Settings() {
             padding: 32,
             margin: 8,
             paddingTop: 0,
+            borderRadius: 16,
           }}
         >
           {sliderValue !== null && (

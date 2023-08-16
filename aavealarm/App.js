@@ -22,10 +22,7 @@ export default function App() {
         supabase
           .from("user")
           .update({ onesignal_id: state?.userId })
-          .eq("user_id", supabaseUserId)
-          .then((res) => {
-            console.log("aaaa res:", res); // eslint-disable-line
-          });
+          .eq("user_id", supabaseUserId);
       });
     });
   });

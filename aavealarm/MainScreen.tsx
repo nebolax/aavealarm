@@ -13,6 +13,17 @@ import { useEffect, useState } from "react";
 import { getSupabase } from "./supabase";
 import { humanizeChainName } from "./utils";
 
+const CHAIN_ICONS: IconsPerChain = {
+  [Chain.ETHEREUM]: require("./assets/chains/ethereum.png"),
+  [Chain.AVALANCHE]: require("./assets/chains/avalanche.png"),
+  [Chain.POLYGON]: require("./assets/chains/polygon.png"),
+  [Chain.ETHEREUM_SEPOLIA]: require("./assets/chains/ethereum.png"),
+  [Chain.POLYGON_MUMBAI]: require("./assets/chains/polygon.png"),
+  [Chain.ARBITRUM]: require("./assets/chains/arbitrum.png"),
+  [Chain.OPTIMISM]: require("./assets/chains/optimism.png"),
+  [Chain.METIS]: require("./assets/chains/metis.png"),
+};
+
 const TrashbinIcon = (
   <Image
     style={{ width: 16, height: 16, tintColor: "#A5A9BD" }}
@@ -29,6 +40,7 @@ const IconButton = (props: { onPress: () => void; icon: JSX.Element }) => (
       justifyContent: "center",
       alignItems: "center",
       padding: 8,
+      borderRadius: 6,
     }}
     onPress={props.onPress}
   >
@@ -61,17 +73,6 @@ const FloatingButton = (
     />
   </TouchableOpacity>
 );
-
-const CHAIN_ICONS: IconsPerChain = {
-  [Chain.ETHEREUM]: require("./assets/chains/ethereum.png"),
-  [Chain.AVALANCHE]: require("./assets/chains/avalanche.png"),
-  [Chain.POLYGON]: require("./assets/chains/polygon.png"),
-  [Chain.ETHEREUM_SEPOLIA]: require("./assets/chains/ethereum.png"),
-  [Chain.POLYGON_MUMBAI]: require("./assets/chains/polygon.png"),
-  [Chain.ARBITRUM]: require("./assets/chains/arbitrum.png"),
-  [Chain.OPTIMISM]: require("./assets/chains/optimism.png"),
-  [Chain.METIS]: require("./assets/chains/metis.png"),
-};
 
 function SingleAccount(props: {
   account: ChainAccount;
@@ -107,6 +108,7 @@ function SingleAccount(props: {
         padding: 16,
         display: "flex",
         flexDirection: "row",
+        borderRadius: 12,
       }}
       onPress={() => {
         props.onClick(props.account);
@@ -154,7 +156,6 @@ export default function MainScreen(
   const [accounts, setAccounts] = useState<ChainAccount[]>([]);
   const updateTrackedAccounts = () => {
     getSupabase().then((supabase) => {
-      console.log("fetching accounts from supabase on main screen");
       supabase
         .from("account")
         .select("address, chain, aave_version")
@@ -172,6 +173,8 @@ export default function MainScreen(
     });
   };
   useEffect(() => {
+    // Using a listener in order to refresh accounts after using goBack()
+    // from the Addition screen.
     props.navigation.addListener("focus", updateTrackedAccounts);
   }, []);
 
@@ -183,8 +186,7 @@ export default function MainScreen(
         .eq("address", account.address)
         .eq("chain", account.chain)
         .eq("aave_version", account.aaveVersion)
-        .then((res) => {
-          console.log("deleted account", res);
+        .then(() => {
           updateTrackedAccounts();
         });
     });
@@ -195,7 +197,8 @@ export default function MainScreen(
       style={{
         flex: 1,
         backgroundColor: "#1B2030",
-        marginTop: 96,
+        marginTop: 76,
+        zIndex: 100,
       }}
     >
       <FloatingButton navigation={props.navigation} />

@@ -31,39 +31,26 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 let supabaseInitialized = false;
 
 export async function initializeSupabase() {
-  console.log("Initializing supabase");
   const currentSession = (await supabase.auth.getUser()).data.user;
-  console.log("Supabase user id", currentSession?.id);
   if (currentSession) {
     supabaseInitialized = true;
     return;
   }
   let appUserId = await SecureStore.getItemAsync("appUserId");
   if (appUserId) {
-    const authResponse = await supabase.auth.signInWithPassword({
+    await supabase.auth.signInWithPassword({
       email: `${appUserId}@aavealarm.com`,
       password: "aavealarm",
     });
-    if (authResponse.error) {
-      console.error("Error signing in:", authResponse.error);
-    } else {
-      console.log("Signed in successfully:", authResponse.data);
-    }
   } else {
-    console.log("Creating new appUserId..");
     appUserId = uuid.v4().toString();
 
     const authResponse = await supabase.auth.signUp({
       email: `${appUserId}@aavealarm.com`,
       password: "aavealarm",
     });
-    if (authResponse.error) {
-      console.error("Error signing up:", authResponse.error);
-    } else {
-      console.log("Signed up successfully:", authResponse.data);
-      console.log("aaaa appUserId", appUserId);
+    if (!authResponse.error) {
       await SecureStore.setItemAsync("appUserId", appUserId);
-      console.log("aaaa returned id", authResponse.data.user!.id);
       await SecureStore.setItemAsync(
         "supabaseUserId",
         authResponse.data.user!.id
@@ -74,7 +61,6 @@ export async function initializeSupabase() {
 }
 
 export async function getSupabase() {
-  console.log("aaa supabaseInitialized", supabaseInitialized);
   while (!supabaseInitialized) {
     await new Promise((resolve) => setTimeout(resolve, 100));
   }

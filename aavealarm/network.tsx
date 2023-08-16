@@ -19,7 +19,7 @@ import * as markets from "@bgd-labs/aave-address-book";
 
 const CHAIN_TO_RPC: RpcsPerChain = {
   [Chain.ETHEREUM]: "https://eth.llamarpc.com",
-  [Chain.ETHEREUM_SEPOLIA]: "https://rpc.sepolia.org",
+  [Chain.ETHEREUM_SEPOLIA]: "https://eth-sepolia.public.blastapi.io",
   [Chain.POLYGON]: "https://polygon.llamarpc.com",
   [Chain.POLYGON_MUMBAI]: "https://rpc.ankr.com/polygon_mumbai",
   [Chain.AVALANCHE]: "https://avalancherpc.com",
@@ -196,8 +196,4 @@ export async function queryAccountData(
     ),
     assets: userAssets,
   };
-}
-
-export function getAllTrackedAccounts(): ChainAccount[] {
-  return [];
 }

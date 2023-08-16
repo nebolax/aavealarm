@@ -11,7 +11,7 @@ export function Header(props: { title: string }) {
   const navigation = useNavigation();
   const route = useRoute();
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, zIndex: 1 }}>
       <ImageBackground
         style={{ height: 96 }}
         resizeMode="stretch"

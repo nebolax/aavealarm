@@ -11,7 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.aavealarm",
@@ -38,7 +40,27 @@
       ]
     ],
     "extra": {
-      "oneSignalAppId": "994488d6-531e-4707-afe1-e9df89031719"
+      "oneSignalAppId": "994488d6-531e-4707-afe1-e9df89031719",
+      "eas": {
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "OneSignalNotificationServiceExtension",
+                  "bundleIdentifier": "com.aavealarm.OneSignalNotificationServiceExtension",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.com.aavealarm.onesignal"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "c3a4eb99-ba9e-4c3e-ac23-a9be403cb8c9"
+      }
     }
   }
 }

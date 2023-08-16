@@ -189,21 +189,43 @@ export async function queryAccountData(
   const userAssets: SingleAssetUsageInfo[] = [];
   for (const userReserve of userReserves.userReserves) {
     const reserveData = reservesMapping[userReserve.underlyingAsset];
-    userAssets.push({
-      symbol: reserveData.symbol,
-      supplied:
+    let supplied: number | undefined;
+    if (
+      !reserveData.isActive ||
+      reserveData.isFrozen ||
+      !reserveData.usageAsCollateralEnabled
+    ) {
+      supplied = undefined;
+    } else {
+      supplied =
         (((parseInt(userReserve.scaledATokenBalance) /
           10 ** reserveData.decimals) *
           parseInt(reserveData.priceInMarketReferenceCurrency)) /
           10 ** reserves.baseCurrencyData.marketReferenceCurrencyDecimals) *
-        marketCurrencyMultiplier,
-      borrowed:
+        marketCurrencyMultiplier;
+    }
+
+    let borrowed: number | undefined;
+    if (
+      !reserveData.isActive ||
+      reserveData.isFrozen ||
+      !reserveData.borrowingEnabled
+    ) {
+      borrowed = undefined;
+    } else {
+      borrowed =
         ((((parseInt(userReserve.scaledVariableDebt) ||
           parseInt(userReserve.principalStableDebt)) /
           10 ** reserveData.decimals) *
           parseInt(reserveData.priceInMarketReferenceCurrency)) /
           10 ** reserves.baseCurrencyData.marketReferenceCurrencyDecimals) *
-        marketCurrencyMultiplier,
+        marketCurrencyMultiplier;
+    }
+
+    userAssets.push({
+      symbol: reserveData.symbol,
+      supplied: supplied,
+      borrowed: borrowed,
     });
   }
   return {

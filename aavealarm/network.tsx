@@ -16,8 +16,9 @@ import {
 } from "./abis";
 import { ChainId, UiPoolDataProvider } from "@aave/contract-helpers";
 import * as markets from "@bgd-labs/aave-address-book";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const CHAIN_TO_RPC: RpcsPerChain = {
+const DEFAULT_CHAIN_TO_RPC: RpcsPerChain = {
   [Chain.ETHEREUM]: "https://eth.llamarpc.com",
   [Chain.ETHEREUM_SEPOLIA]: "https://eth-sepolia.public.blastapi.io",
   [Chain.POLYGON]: "https://polygon.llamarpc.com",
@@ -27,6 +28,26 @@ const CHAIN_TO_RPC: RpcsPerChain = {
   [Chain.OPTIMISM]: "https://mainnet.optimism.io",
   [Chain.METIS]: "https://andromeda.metis.io/?owner=1088",
 };
+
+async function getChainRpc(chain: Chain): Promise<string> {
+  // Check if there is an rpc fetched from remote storage or use the default
+  const rpcUrl = await AsyncStorage.getItem(`rpc_${chain}`);
+  if (rpcUrl) {
+    return rpcUrl;
+  }
+  return DEFAULT_CHAIN_TO_RPC[chain];
+}
+
+export async function updateChainRpcs() {
+  // Query rpcs from remote storate (data folder in the repo) and update the default rpcs
+  const remoteRawData = await fetch(
+    "https://raw.githubusercontent.com/nebolax/aavealarm/main/data/rpc_nodes.json"
+  );
+  const remoteData = await remoteRawData.json();
+  for (const chain in remoteData) {
+    await AsyncStorage.setItem(`rpc_${chain}`, remoteData[chain]);
+  }
+}
 
 function getAaveMarket(
   chain: Chain,
@@ -93,7 +114,7 @@ function getAaveMarket(
 export async function queryAccountData(
   account: ChainAccount
 ): Promise<ChainAccountData> {
-  const rpcUrl = CHAIN_TO_RPC[account.chain as keyof typeof CHAIN_TO_RPC];
+  const rpcUrl = await getChainRpc(account.chain);
   const provider = new JsonRpcProvider(rpcUrl);
 
   const [uiPoolDataProvider, poolAddressProvider, chainId] = getAaveMarket(
@@ -127,7 +148,6 @@ export async function queryAccountData(
       provider
     );
   }
-  console.log("aaaa lending pool", lendingPoolContract.address);
   const userAccountData = await lendingPoolContract.getUserAccountData(
     account.address
   );

@@ -10,12 +10,14 @@ import Settings from "./Settings";
 import Addition from "./Addition";
 import { getSupabase, initializeSupabase } from "./supabase";
 import * as SecureStore from "expo-secure-store";
+import { updateChainRpcs } from "./network";
 
 OneSignal.setAppId(Constants.expoConfig.extra.oneSignalAppId);
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   initializeSupabase();
+  updateChainRpcs();
   OneSignal.getDeviceState().then((state) => {
     getSupabase().then((supabase) => {
       SecureStore.getItemAsync("supabaseUserId").then((supabaseUserId) => {

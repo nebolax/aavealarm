@@ -17,7 +17,7 @@
     "@ethersproject/shims": "^5.7.0",
     "@miblanchard/react-native-slider": "^2.3.1",
     "@ptomasroos/react-native-multi-slider": "^2.2.2",
-    "@react-native-async-storage/async-storage": "^1.19.1",
+    "@react-native-async-storage/async-storage": "^1.19.2",
     "@react-native-community/slider": "^4.4.2",
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/native-stack": "^6.9.13",

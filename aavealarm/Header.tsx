@@ -20,6 +20,7 @@ export function Header(props: { title: string }) {
         <View
           style={{
             alignItems: "center",
+            paddingBottom: 16,
             justifyContent: "space-between",
             flex: 1,
             flexDirection: "row",

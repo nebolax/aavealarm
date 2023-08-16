@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { Chain, ChainAccount } from "./types";
@@ -158,7 +159,7 @@ function SingleAccount(props: {
 export default function MainScreen(
   props: { navigation: NavigationProp<any> } // eslint-disable-line
 ) {
-  const [accounts, setAccounts] = useState<ChainAccount[]>([]);
+  const [accounts, setAccounts] = useState<ChainAccount[] | null>(null);
   const updateTrackedAccounts = () => {
     getSupabase().then((supabase) => {
       supabase
@@ -206,6 +207,9 @@ export default function MainScreen(
         zIndex: 100,
       }}
     >
+      {accounts === null && (
+        <ActivityIndicator size="large" style={{ flex: 1 }} color="#7D3D87" />
+      )}
       <FloatingButton navigation={props.navigation} />
       <SafeAreaView>
         <ScrollView>
@@ -217,16 +221,17 @@ export default function MainScreen(
               margin: 16,
             }}
           >
-            {accounts.map((account, index) => (
-              <SingleAccount
-                key={index}
-                account={account}
-                onClick={(account) => {
-                  props.navigation.navigate("Account", { account: account });
-                }}
-                onDelete={onAccountDeletion}
-              />
-            ))}
+            {accounts !== null &&
+              accounts.map((account, index) => (
+                <SingleAccount
+                  key={index}
+                  account={account}
+                  onClick={(account) => {
+                    props.navigation.navigate("Account", { account: account });
+                  }}
+                  onDelete={onAccountDeletion}
+                />
+              ))}
           </View>
         </ScrollView>
       </SafeAreaView>

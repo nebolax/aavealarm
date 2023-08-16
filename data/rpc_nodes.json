@@ -1,0 +1,10 @@
+{
+  "ETHEREUM": "https://eth.llamarpc.com",
+  "ETHEREUM_SEPOLIA": "https://eth-sepolia.public.blastapi.io",
+  "POLYGON": "https://polygon.llamarpc.com",
+  "POLYGON_MUMBAI": "https://rpc.ankr.com/polygon_mumbai",
+  "AVALANCHE": "https://avalancherpc.com",
+  "ARBITRUM": "https://arb1.arbitrum.io/rpc",
+  "OPTIMISM": "https://mainnet.optimism.io",
+  "METIS": "https://andromeda.metis.io/?owner=1088"
+}

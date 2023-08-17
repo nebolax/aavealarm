@@ -32,10 +32,14 @@ class Database:
             users_data.append((raw_user['user']['onesignal_id'], last_health_factor_notification))
 
         return users_data
+    
+    def set_last_health_factor_notification(self, account: ChainAccount, timestamp: datetime) -> None:
+        """Set the last health factor notification timestamp for the given account"""
+        self.supabase.table('account').update({'last_health_factor_notification': timestamp.isoformat()}).eq('address', account.address).eq('chain', account.chain.value).eq('aave_version', account.aave_version).execute()
 
-    def get_all_accounts_with_health_factors_on_chain(self, chain: Chain) -> list[ChainAccount]:
+    def get_all_accounts_with_health_factors(self, chain: Chain, aave_version: int) -> list[ChainAccount]:
         """Get accounts across all app users that belong to the given chain"""
-        raw_accounts = self.supabase.table('account').select('address, chain, aave_version, user(health_factor_threshold)').eq('chain', chain.value).execute()
+        raw_accounts = self.supabase.table('account').select('address, chain, aave_version, user(health_factor_threshold)').eq('chain', chain.value).eq('aave_version', aave_version).execute()
         accounts = []
         for raw_account in raw_accounts.data:
             accounts.append(ChainAccountWithHF(

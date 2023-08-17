@@ -50,4 +50,4 @@ class Database:
                 ),
                 health_factor_threshold=raw_account['user']['health_factor_threshold'],
             ))
-        return accounts
+        return list(set(accounts))  # remove duplicates

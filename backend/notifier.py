@@ -42,11 +42,12 @@ class Notifier:
 
     def notify(self, chain_account: ChainAccount, event_type: EventType, title: str, message: str) -> None:
         logging.info(f'Might send a notification about {event_type} on {str(chain_account)}')
-        suubscribed_accounts = self.database.get_users_for_notification(chain_account)
-        logging.info(f'Found {len(suubscribed_accounts)} subscribed accounts on {str(chain_account)}')
-        for user_account in suubscribed_accounts:
+        subscribed_accounts = self.database.get_users_for_notification(chain_account)
+        logging.info(f'Found {len(subscribed_accounts)} subscribed accounts on {str(chain_account)}')
+        for user_account in subscribed_accounts:
             onesignal_id, last_health_factor_notification_timestamp = user_account
             if onesignal_id is None:
+                logging.error(f'Bad! No onesignal id was sent for a user account that tracks {str(chain_account)}')
                 continue
 
             current_timestamp_seconds = int(datetime.utcnow().timestamp()) 

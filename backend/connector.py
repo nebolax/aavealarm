@@ -1,5 +1,3 @@
-from abc import ABC, abstractmethod, ABCMeta
-import os
 from backend.exceptions import StartupException
 from backend.types import Chain, ChainAccount, ChainAccountWithHF
 import websockets
@@ -28,7 +26,7 @@ def topic_to_address(topic: HexBytes) -> str:
 
 
 def build_subscription_message(pool_address: str, liquidation_topic: str) -> dict:
-    return {'id': 2, 'method': 'eth_subscribe', 'params': ['getLogs', {
+    return {'id': 2, 'method': 'eth_subscribe', 'params': ['logs', {
         'address': pool_address,
         'topics': [liquidation_topic],
     }]}
@@ -60,57 +58,18 @@ class ChainConnector():
         self.v2_pool_address = v2_pool_address
         self.v3_pool_address = v3_pool_address
 
-        with open('./abi/v2_pool.json') as f:
+        with open('./backend/abi/v2_pool.json') as f:
             v2_pool_abi = json.loads(f.read())
 
-        with open('./abi/v3_pool.json') as f:
+        with open('./backend/abi/v3_pool.json') as f:
             v3_pool_abi = json.loads(f.read())
         
-        with open('./abi/erc20.json') as f:
+        with open('./backend/abi/erc20.json') as f:
             erc20_abi = json.loads(f.read())
         
         self.erc20_abi = erc20_abi
         self.v2_pool_contract = self.web3.eth.contract(address=v2_pool_address, abi=v2_pool_abi)
         self.v3_pool_contract = self.web3.eth.contract(address=v3_pool_address, abi=v3_pool_abi)
-
-    # def get_relevant_accounts_with_thresholds(self) -> list[ChainAccountWithHF]:
-    #     """Get all accounts from the DB that belong to this chain and their threshold health factors"""
-    #     return [
-    #         ChainAccountWithHF(
-    #             account=ChainAccount(
-    #                 address='0x4bBa290826C253BD854121346c370a9886d1bC26',
-    #                 chain=Chain.ETHEREUM_SEPOLIA,
-    #                 aave_version='V3',
-    #             ),
-    #             health_factor_threshold=1.2,
-    #         ),
-    #         ChainAccountWithHF(
-    #             account=ChainAccount(
-    #                 address='0xFf385BB2bd955E906b5ED6A5535B9AFA6F9a3796',
-    #                 chain=Chain.ETHEREUM_SEPOLIA,
-    #                 aave_version='V3',
-    #             ),
-    #             health_factor_threshold=1.5,
-    #         ),
-    #     ]
-    #     # return [
-    #     #     TrackedAccountWithHF(
-    #     #         account=TrackedAccount(
-    #     #             address='0x4bBa290826C253BD854121346c370a9886d1bC26',
-    #     #             chain=Chain.POLYGON_MUMBAI,
-    #     #             aave_version='V2'
-    #     #         ),
-    #     #         health_factor_threshold=2.0,
-    #     #     ),
-    #     #     TrackedAccountWithHF(
-    #     #         account=TrackedAccount(
-    #     #             address='0x75a0b9a3d63c4a56198831369657d6D8F44BE25b',
-    #     #             chain=Chain.POLYGON_MUMBAI,
-    #     #             aave_version='V3',
-    #     #         ),
-    #     #         health_factor_threshold=1.8,
-    #     #     )
-    #     # ]
 
     def get_v2_health_factors(self, accounts_batch: list[ChainAccountWithHF]) -> list[float]:
         """Get aave V2 health factors of all accounts in the batch"""
@@ -125,7 +84,6 @@ class ChainConnector():
             else:
                 health_factors.append(account_data[-1] / 1e18)
         
-        print('aaaa v2 health factors', health_factors)
         return health_factors
 
     def get_v3_health_factors(self, accounts_batch: list[ChainAccountWithHF]) -> list[float]:
@@ -140,7 +98,7 @@ class ChainConnector():
                 health_factors.append(-1)
             else:
                 health_factors.append(account_data[-1] / 1e18)
-        print('aaaa v3 health factors', health_factors)
+
         return health_factors
 
     def health_factor_periodic_task(self) -> None:
@@ -268,4 +226,4 @@ class ChainConnector():
                     logger.critical(f'Failed to decode message {raw_message} for {self.chain.name}')
                     continue
                 
-                print(decoded_message)
+                self.process_liquidation_log(decoded_message['params']['result'])

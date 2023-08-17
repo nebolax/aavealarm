@@ -5,7 +5,6 @@ from datetime import datetime
 class Database:
     def __init__(self, supabase_url: str, supabase_key: str) -> None:
         self.supabase: Client = create_client(supabase_url, supabase_key)
-        # self.supabase.auth.sign_up({'email': 'example-2@gmail.com', 'password': '12345678'})
     
     def get_setting(self, key: str) -> any:
         response = self.supabase.table('setting').select('value').eq('key', key).execute()
@@ -47,4 +46,4 @@ class Database:
                 ),
                 health_factor_threshold=raw_account['user']['health_factor_threshold'],
             ))
-        print('aaaa raw_accounts', accounts)
+        return accounts

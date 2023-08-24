@@ -1,5 +1,5 @@
 from backend.exceptions import StartupException
-from backend.types import Chain, ChainAccount, ChainAccountWithHF
+from backend.types import Chain, ChainAccount, ChainAccountWithAllData
 import websockets
 import asyncio
 import json
@@ -9,6 +9,7 @@ from web3.types import HexBytes
 from eth_utils import to_checksum_address
 from backend.notifier import Notifier
 from backend.database import Database
+from datetime import datetime
 
     
 WS_NEW_HEADS_SUBSCRIBE_MESSAGE = {'id': 1, 'method': 'eth_subscribe', 'params': ['newHeads']}
@@ -66,7 +67,7 @@ class ChainConnector():
         self.erc20_abi = erc20_abi
         self.pool_contract = self.web3.eth.contract(address=pool_address, abi=pool_abi)
 
-    def get_health_factors(self, accounts_batch: list[ChainAccountWithHF]) -> list[float]:
+    def get_health_factors(self, accounts_batch: list[ChainAccountWithAllData]) -> list[float]:
         """Get aave health factors of all accounts in the batch"""
         accounts_data = []
         for account in accounts_batch:
@@ -88,16 +89,21 @@ class ChainConnector():
         3. Check the health factors against the thresholds and send notifications if needed.
         """
         logging.info(f'Checking health factors on {self.chain.name} x Aave V{self.aave_version}')
-        all_accounts = self.database.get_all_accounts_with_health_factors(self.chain, self.aave_version)
-        health_factors = []
+        all_accounts = self.database.get_accounts_for_hf_check(self.chain, self.aave_version)
+        health_factors: list[float] = []
         for batch in make_batches(all_accounts, HEALTH_FACTOR_BATCH_SIZE):
             health_factors += self.get_health_factors(batch)
         
         logging.info(f'Got {len(health_factors)} health factors on {self.chain.name} x Aave V{self.aave_version}')
         for account, health_factor in zip(all_accounts, health_factors):
             if health_factor < account.health_factor_threshold and health_factor != -1:
-                message = f'Health factor on your account {self.chain.name} {account.account.address} is {health_factor} which is below the threshold of {account.health_factor_threshold}.'
-                self.notifier.notify(chain_account=account.account, event_type='health_factor', title='Low health factor!', message=message)
+                if account.onesignal_id is None:
+                    logging.error(f'Bad! No onesignal id was set for a user {account.user_id} account that tracks {str(account.account)}')
+                    continue
+
+                message = f'Health factor on your account {str(self.chain)} {account.account.address} is {health_factor:.2f} which is below the threshold of {account.health_factor_threshold}.'
+                self.notifier.send_single_notificaion(account.onesignal_id, title='Low health factor!', message=message)
+                self.database.set_last_health_factor_notification(account.account, account.user_id, datetime.utcnow())
 
     async def monitor_health_factor(self) -> None:
         """Periodically check health factor of all accounts on this chain"""
@@ -160,7 +166,7 @@ class ChainConnector():
         
         logging.info(f'Queried data for the liquidation of {user} on {self.chain.name} x Aave V{self.aave_version}. Sending the notification!')
         message = f'Your account {user} on chain {self.chain.name} was liquidated. {collateral_token_symbol} {liquidated_collateral_amount} was liquidated to cover {debt_token_symbol} {covered_debt_amount} debt.'
-        self.notifier.notify(chain_account=account, event_type='liquidation', title='Liquidation occured!', message=message)
+        self.notifier.notify_about_liquidation(chain_account=account, event_type='liquidation', title='Liquidation occured!', message=message)
 
     async def monitor_liquidations(self):
         """Periodically check liquidations on this chain"""

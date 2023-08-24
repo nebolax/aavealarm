@@ -1,22 +1,21 @@
 {
   "expo": {
-    "name": "aavealarm",
+    "name": "Aave alarm",
     "slug": "aavealarm",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1B2030"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.aavealarm",
+      "buildNumber": "2",
       "config": {
         "usesNonExemptEncryption": false
       }
@@ -29,7 +28,7 @@
       "package": "com.aavealarm"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/icon.png"
     },
     "plugins": [
       [

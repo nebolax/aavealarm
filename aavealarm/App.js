@@ -11,24 +11,34 @@ import Addition from "./Addition";
 import { getSupabase, initializeSupabase } from "./supabase";
 import * as SecureStore from "expo-secure-store";
 import { updateChainRpcs } from "./network";
+import { useEffect } from "react";
 
 OneSignal.setAppId(Constants.expoConfig.extra.oneSignalAppId);
 const Stack = createNativeStackNavigator();
 
+async function saveOneSignalId() {
+  // Saves the generated onesignal id to supabase
+  let onesignalId: string | undefined = undefined;
+  while (!onesignalId) {
+    onesignalId = (await OneSignal.getDeviceState()).userId;
+    console.log("Onesignal ID:", onesignalId);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+  const supabase = await getSupabase(); // getting supabase first to make sure that supabaseUserId is set
+  const supabaseUserId = await SecureStore.getItemAsync("supabaseUserId");
+  await supabase
+    .from("user")
+    .update({ onesignal_id: onesignalId })
+    .eq("user_id", supabaseUserId);
+  console.log("Saved Onesignal ID to supabase");
+}
+
 export default function App() {
-  initializeSupabase();
-  updateChainRpcs();
-  OneSignal.getDeviceState().then((state) => {
-    getSupabase().then((supabase) => {
-      SecureStore.getItemAsync("supabaseUserId").then((supabaseUserId) => {
-        supabase
-          .from("user")
-          .update({ onesignal_id: state?.userId })
-          .eq("user_id", supabaseUserId)
-          .then(); // wait for the update to finish
-      });
-    });
-  });
+  useEffect(() => {
+    initializeSupabase();
+    saveOneSignalId();
+    updateChainRpcs();
+  }, []);
   return (
     <NavigationContainer>
       <Stack.Navigator

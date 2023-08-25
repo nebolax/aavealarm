@@ -121,8 +121,7 @@ class ChainConnector():
         logging.info(f'Checking for liquidations on {self.chain.name} x Aave V{self.aave_version}')
         setting_key = f'LAST_{self.chain.name}_V{self.aave_version}_CHECKED_BLOCK'
         last_checked_block_raw = self.database.get_setting(setting_key)
-        current_block = self.web3.eth.block_number
-        self.database.set_setting(setting_key, current_block)
+        current_block = self.web3.eth.block_number - 1  # Doing -1 because it may be that the current block is not confirmed yet on Avalanche.
         if last_checked_block_raw is None:
             logging.info(f'No last checked block found. But we set {setting_key} to {current_block}')
             return  # Cant do anything. No state saved.
@@ -140,6 +139,8 @@ class ChainConnector():
         logging.info(f'Found {len(logs)} liquidations on {self.chain.name} x Aave V{self.aave_version}')
         for log in logs:
             self.process_liquidation_log(log)
+
+        self.database.set_setting(setting_key, current_block)
         
     def process_liquidation_log(self, log: dict) -> None:
         """Process a single aave liquidation log and send a notification if the liquidated account is tracked."""

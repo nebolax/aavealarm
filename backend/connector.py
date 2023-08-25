@@ -177,7 +177,6 @@ class ChainConnector():
         while True:
             try:
                 self.catchup_on_liquidations()
-                raise Exception('Test')
             except Exception:
                 await send_admin_message('Critical error!')
                 logging.error(f'Error while catching up on liquidations on {self.chain.name} x Aave V{self.aave_version}: {traceback.format_exc()}')

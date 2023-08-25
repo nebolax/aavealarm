@@ -27,9 +27,7 @@ class Database:
         raw_users = self.supabase.table('account').select('user(onesignal_id), user_id, last_health_factor_notification').eq('address', account.address).eq('chain', account.chain.value).eq('aave_version', account.aave_version).execute()
         users_data = []
         for raw_user in raw_users.data:
-            last_health_factor_notification = datetime.fromisoformat(raw_user['last_health_factor_notification'])
-
-            users_data.append((raw_user['user']['onesignal_id'], raw_user['user_id'], last_health_factor_notification))
+            users_data.append((raw_user['user']['onesignal_id'], raw_user['user_id']))
 
         return users_data
     

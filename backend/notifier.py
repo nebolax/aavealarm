@@ -7,6 +7,7 @@ from onesignal.api import default_api
 import os
 from dotenv import load_dotenv
 import logging
+import traceback
 
 load_dotenv()
 EventType = Literal['liquidation', 'health_factor']
@@ -36,14 +37,14 @@ class Notifier:
                 api_instance.create_notification(notification)
                 logging.info(f'Notification about {title} was successfully sent to {onesignal_user_id}!')
             except onesignal.ApiException as e:
-                logging.error(f'Exception when calling DefaultApi->create_notification for {onesignal_user_id} about {title}: {str(e)}')
+                logging.error(f'Exception when calling DefaultApi->create_notification for {onesignal_user_id} about {title}: {traceback.format_exc()}')
 
     def notify_about_liquidation(self, chain_account: ChainAccount, title: str, message: str, user_id: str | None) -> None:
         logging.info(f'Might send a notification about liquidation on {str(chain_account)}')
         subscribed_accounts = self.database.get_users_for_notification(chain_account)
         logging.info(f'Found {len(subscribed_accounts)} subscribed accounts on {str(chain_account)}')
         for user_account in subscribed_accounts:
-            onesignal_id, _, _  = user_account
+            onesignal_id, _  = user_account
             if onesignal_id is None:
                 logging.error(f'Bad! No onesignal id was sent for a user account that tracks {str(chain_account)}')
                 continue

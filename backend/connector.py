@@ -10,6 +10,8 @@ from eth_utils import to_checksum_address
 from backend.notifier import Notifier
 from backend.database import Database
 from datetime import datetime
+import traceback
+from backend.admin import send_admin_message
 
     
 WS_NEW_HEADS_SUBSCRIBE_MESSAGE = {'id': 1, 'method': 'eth_subscribe', 'params': ['newHeads']}
@@ -110,8 +112,10 @@ class ChainConnector():
         while True:
             try:
                 self.check_health_factors()
-            except Exception as e:
-                logging.error(f'Error while checking health factors on {self.chain.name} x Aave V{self.aave_version}: {e}')
+            except Exception:
+                await send_admin_message('Critical error!')
+                logging.error(f'Error while checking health factors on {self.chain.name} x Aave V{self.aave_version}: {traceback.format_exc()}')
+                
             await asyncio.sleep(HEALTH_FACTOR_CHECK_PERIOD)
 
     def catchup_on_liquidations(self) -> None:
@@ -173,6 +177,8 @@ class ChainConnector():
         while True:
             try:
                 self.catchup_on_liquidations()
-            except Exception as e:
-                logging.error(f'Error while catching up on liquidations on {self.chain.name} x Aave V{self.aave_version}: {e}')
+                raise Exception('Test')
+            except Exception:
+                await send_admin_message('Critical error!')
+                logging.error(f'Error while catching up on liquidations on {self.chain.name} x Aave V{self.aave_version}: {traceback.format_exc()}')
             await asyncio.sleep(LIQUIDATIONS_CHECK_PERIOD)

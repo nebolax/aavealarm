@@ -37,12 +37,16 @@ class Database:
         """Set the last health factor notification timestamp for the given account"""
         self.supabase.table('account').update({'last_health_factor_notification': timestamp.isoformat()}).eq('address', account.address).eq('chain', account.chain.value).eq('aave_version', account.aave_version).eq('user_id', user_id).execute()
 
+    def _get_raw_accounts(self, chain: Chain, aave_version: int) -> list[dict]:
+        """Get accounts across all app users"""
+        return self.supabase.table('account').select('address, chain, aave_version, user(health_factor_threshold, onesignal_id), user_id, last_health_factor_notification').eq('chain', chain.value).eq('aave_version', aave_version).execute().data
+
     def get_accounts_for_hf_check(self, chain: Chain, aave_version: int) -> list[ChainAccountWithAllData]:
         """Get accounts across all app users to check their health factors"""
-        raw_accounts = self.supabase.table('account').select('address, chain, aave_version, user(health_factor_threshold, onesignal_id), user_id, last_health_factor_notification').eq('chain', chain.value).eq('aave_version', aave_version).execute()
+        raw_accounts = self._get_raw_accounts(chain=chain, aave_version=aave_version)
         accounts = []
         current_timestamp_seconds = int(datetime.utcnow().timestamp()) 
-        for raw_account in raw_accounts.data:
+        for raw_account in raw_accounts:
             account = ChainAccountWithAllData(
                 account=ChainAccount(
                   address=raw_account['address'],

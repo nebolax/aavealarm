@@ -1,12 +1,14 @@
 from unittest.mock import patch
 
+import freezegun
+
 from backend.connector import ChainConnector
 from backend.database import Database
 from backend.notifier import Notifier
 from backend.types import Chain
 
 
-# TODO: freezgun it
+@freezegun.freeze_time('2023-08-25 20:00:00')
 def test_low_health_factor():
     """Test that if health factor is low, the notifications are sent.
     This test uses 4 accounts. Notifications should be sent for 1 and 4 accounts.

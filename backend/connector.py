@@ -2,7 +2,6 @@ import asyncio
 import json
 import logging
 import traceback
-from datetime import datetime
 
 from eth_utils import to_checksum_address
 from web3 import HTTPProvider, Web3
@@ -19,6 +18,7 @@ HEALTH_FACTOR_CHECK_PERIOD = 60 * 5  # every 5 minutes
 LIQUIDATIONS_CHECK_PERIOD = 60 * 1  # every minute
 HEALTH_FACTOR_BATCH_SIZE = 100  # How many accounts to check at once. Limited by max gas per call.
 MAX_UINT256 = 2 ** 256 - 1
+MAX_BLOCK_RANGE = 100
 
 LIQUIDATION_TOPIC = '0xe413a321e8681d831f4dbccbca790d2952b56f977908e45be37335533e005286'
 
@@ -103,8 +103,7 @@ class ChainConnector():
                     continue
 
                 message = f'Health factor on your account {str(self.chain)} {account.account.address} is {health_factor:.2f} which is below the threshold of {account.health_factor_threshold}.'
-                self.notifier.send_single_notificaion(account.onesignal_id, title='Low health factor!', message=message)
-                self.database.set_last_health_factor_notification(account.account, account.user_id, datetime.utcnow())
+                self.notifier.notify_about_health_factor(account=account, message=message)
 
     async def monitor_health_factor(self) -> None:
         """Periodically check health factor of all accounts on this chain"""
@@ -130,12 +129,14 @@ class ChainConnector():
 
         logging.info(f'Checking liquidations from block {last_checked_block_raw} to {current_block} on {self.chain.name} x Aave V{self.aave_version}')
         last_checked_block = int(last_checked_block_raw)
-        logs = self.web3.eth.get_logs({
-            'address': self.pool_address,
-            'topics': [LIQUIDATION_TOPIC],
-            'fromBlock': last_checked_block,
-            'toBlock': current_block,
-        })
+        logs = []
+        for from_block in range(last_checked_block, current_block, MAX_BLOCK_RANGE):
+            logs += self.web3.eth.get_logs({
+                'address': self.pool_address,
+                'topics': [LIQUIDATION_TOPIC],
+                'fromBlock': from_block,
+                'toBlock': min(current_block, from_block + MAX_BLOCK_RANGE),
+            })
         logging.info(f'Found {len(logs)} liquidations on {self.chain.name} x Aave V{self.aave_version}')
         for log in logs:
             self.process_liquidation_log(log)

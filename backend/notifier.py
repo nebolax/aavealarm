@@ -1,13 +1,14 @@
-from backend.types import ChainAccount
-from backend.database import Database
-from typing import Literal
-from datetime import datetime
-import onesignal
-from onesignal.api import default_api
-import os
-from dotenv import load_dotenv
 import logging
+import os
 import traceback
+from typing import Literal
+
+import onesignal
+from dotenv import load_dotenv
+from onesignal.api import default_api
+
+from backend.database import Database
+from backend.types import ChainAccount
 
 load_dotenv()
 EventType = Literal['liquidation', 'health_factor']
@@ -36,7 +37,7 @@ class Notifier:
                 logging.info(f'Calling DefaultApi->create_notification for {onesignal_user_id} about {title}')
                 api_instance.create_notification(notification)
                 logging.info(f'Notification about {title} was successfully sent to {onesignal_user_id}!')
-            except onesignal.ApiException as e:
+            except onesignal.ApiException:
                 logging.error(f'Exception when calling DefaultApi->create_notification for {onesignal_user_id} about {title}: {traceback.format_exc()}')
 
     def notify_about_liquidation(self, chain_account: ChainAccount, title: str, message: str, user_id: str | None) -> None:

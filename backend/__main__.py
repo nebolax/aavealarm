@@ -1,12 +1,14 @@
 import asyncio
-from backend.connector import ChainConnector
-from dotenv import load_dotenv
-from backend.types import Chain
-from backend.database import Database
-from backend.notifier import Notifier
 import logging
 import os
 import sys
+
+from dotenv import load_dotenv
+
+from backend.connector import ChainConnector
+from backend.database import Database
+from backend.notifier import Notifier
+from backend.types import Chain
 
 load_dotenv()
 

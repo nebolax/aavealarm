@@ -1,6 +1,8 @@
-from backend.types import ChainAccount, Chain, ChainAccountWithAllData
-from supabase import create_client, Client
 from datetime import datetime
+
+from supabase import Client, create_client
+
+from backend.types import Chain, ChainAccount, ChainAccountWithAllData
 
 HEALTH_FACTOR_NOTIFICATION_INTERVAL = 60 * 60 * 12  # 12 hours
 

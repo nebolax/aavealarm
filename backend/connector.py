@@ -1,19 +1,18 @@
-from backend.exceptions import StartupException
-from backend.types import Chain, ChainAccount, ChainAccountWithAllData
-import websockets
 import asyncio
 import json
 import logging
-from web3 import Web3, HTTPProvider
-from web3.types import HexBytes
-from eth_utils import to_checksum_address
-from backend.notifier import Notifier
-from backend.database import Database
-from datetime import datetime
 import traceback
-from backend.admin import send_admin_message
+from datetime import datetime
 
-    
+from eth_utils import to_checksum_address
+from web3 import HTTPProvider, Web3
+from web3.types import HexBytes
+
+from backend.admin import send_admin_message
+from backend.database import Database
+from backend.notifier import Notifier
+from backend.types import Chain, ChainAccount, ChainAccountWithAllData
+
 WS_NEW_HEADS_SUBSCRIBE_MESSAGE = {'id': 1, 'method': 'eth_subscribe', 'params': ['newHeads']}
 
 HEALTH_FACTOR_CHECK_PERIOD = 60 * 5  # every 5 minutes

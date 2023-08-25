@@ -1,5 +1,5 @@
-from typing import NamedTuple, Literal, Type
 from enum import Enum
+from typing import NamedTuple
 
 
 class Chain(Enum):

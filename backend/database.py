@@ -10,13 +10,13 @@ class Database:
     def __init__(self, supabase_url: str, supabase_key: str) -> None:
         self.supabase: Client = create_client(supabase_url, supabase_key)
     
-    def get_setting(self, key: str) -> any:
+    def get_setting(self, key: str) -> str | None:
         response = self.supabase.table('setting').select('value').eq('key', key).execute()
         if len(response.data) == 0:
             return None
         return response.data[0]['value']
     
-    def set_setting(self, key: str, value: any) -> None:
+    def set_setting(self, key: str, value: str) -> None:
         self.supabase.table('setting').upsert({'key': key, 'value': value}).execute()
 
     def is_tracked(self, account: ChainAccount):

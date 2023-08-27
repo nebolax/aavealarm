@@ -2,10 +2,11 @@ import asyncio
 import json
 import logging
 import traceback
+from typing import Generator
 
 from eth_utils import to_checksum_address
 from web3 import HTTPProvider, Web3
-from web3.types import HexBytes
+from web3.types import HexBytes, LogReceipt
 
 from backend.admin import send_admin_message
 from backend.database import Database
@@ -33,7 +34,7 @@ def build_subscription_message(pool_address: str, liquidation_topic: str) -> dic
     }]}
 
 
-def make_batches(lst: list, batch_size: int) -> list[list]:
+def make_batches(lst: list, batch_size: int) -> Generator[list, None, None]:
     """Yield successive n-sized batches from lst."""
     for i in range(0, len(lst), batch_size):
         yield lst[i:i + batch_size]
@@ -66,7 +67,7 @@ class ChainConnector():
             erc20_abi = json.loads(f.read())
         
         self.erc20_abi = erc20_abi
-        self.pool_contract = self.web3.eth.contract(address=pool_address, abi=pool_abi)
+        self.pool_contract = self.web3.eth.contract(address=pool_address, abi=pool_abi)  # type: ignore[call-overload]
 
     def get_health_factors(self, accounts_batch: list[ChainAccountWithAllData]) -> list[float]:
         """Get aave health factors of all accounts in the batch"""
@@ -98,10 +99,6 @@ class ChainConnector():
         logging.info(f'Got {len(health_factors)} health factors on {self.chain.name} x Aave V{self.aave_version}')
         for account, health_factor in zip(all_accounts, health_factors):
             if health_factor < account.health_factor_threshold and health_factor != -1:
-                if account.onesignal_id is None:
-                    logging.error(f'Bad! No onesignal id was set for a user {account.user_id} account that tracks {str(account.account)}')
-                    continue
-
                 message = f'Health factor on your account {str(self.chain)} {account.account.address} is {health_factor:.2f} which is below the threshold of {account.health_factor_threshold}.'
                 self.notifier.notify_about_health_factor(account=account, message=message)
 
@@ -140,9 +137,9 @@ class ChainConnector():
         for log in logs:
             self.process_liquidation_log(log)
 
-        self.database.set_setting(setting_key, current_block)
+        self.database.set_setting(setting_key, str(current_block))
         
-    def process_liquidation_log(self, log: dict) -> None:
+    def process_liquidation_log(self, log: LogReceipt) -> None:
         """Process a single aave liquidation log and send a notification if the liquidated account is tracked."""
         collateral_token_address = topic_to_address(log['topics'][1])
         debt_token_address = topic_to_address(log['topics'][2])
@@ -161,17 +158,17 @@ class ChainConnector():
         covered_debt_amount_raw = int(log['data'][:32].hex(), 16)
         liquidated_collateral_amount_raw = int(log['data'][32:64].hex(), 16)
 
-        collateral_token_symbol = self.web3.eth.contract(address=collateral_token_address, abi=self.erc20_abi).functions.symbol().call()
-        collateral_token_decimals = self.web3.eth.contract(address=collateral_token_address, abi=self.erc20_abi).functions.decimals().call()
+        collateral_token_symbol = self.web3.eth.contract(address=collateral_token_address, abi=self.erc20_abi).functions.symbol().call()  # type: ignore[call-overload]
+        collateral_token_decimals = self.web3.eth.contract(address=collateral_token_address, abi=self.erc20_abi).functions.decimals().call()  # type: ignore[call-overload]
         liquidated_collateral_amount = liquidated_collateral_amount_raw / 10 ** collateral_token_decimals
 
-        debt_token_symbol = self.web3.eth.contract(address=debt_token_address, abi=self.erc20_abi).functions.symbol().call()
-        debt_token_decimals = self.web3.eth.contract(address=debt_token_address, abi=self.erc20_abi).functions.decimals().call()
+        debt_token_symbol = self.web3.eth.contract(address=debt_token_address, abi=self.erc20_abi).functions.symbol().call()  # type: ignore[call-overload]
+        debt_token_decimals = self.web3.eth.contract(address=debt_token_address, abi=self.erc20_abi).functions.decimals().call()  # type: ignore[call-overload]
         covered_debt_amount = covered_debt_amount_raw / 10 ** debt_token_decimals
         
         logging.info(f'Queried data for the liquidation of {user} on {self.chain.name} x Aave V{self.aave_version}. Sending the notification!')
         message = f'Your account {user} on chain {self.chain.name} was liquidated. {collateral_token_symbol} {liquidated_collateral_amount} was liquidated to cover {debt_token_symbol} {covered_debt_amount} debt.'
-        self.notifier.notify_about_liquidation(chain_account=account, event_type='liquidation', title='Liquidation occured!', message=message)
+        self.notifier.notify_about_liquidation(chain_account=account, title='Liquidation occured!', message=message)
 
     async def monitor_liquidations(self):
         """Periodically check liquidations on this chain"""

@@ -11,6 +11,7 @@ class Chain(Enum):
     ARBITRUM = 'ARBITRUM'
     AVALANCHE = 'AVALANCHE'
     METIS = 'METIS'
+    BASE = 'BASE'
 
     def __str__(self) -> str:
         if self == Chain.ETHEREUM_SEPOLIA:

@@ -9,6 +9,7 @@ export enum Chain {
   ARBITRUM = "ARBITRUM",
   METIS = "METIS",
   OPTIMISM = "OPTIMISM",
+  BASE = "BASE",
 }
 
 export const AAVE_V2_CHAINS = [

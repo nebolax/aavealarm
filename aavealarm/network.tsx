@@ -29,7 +29,7 @@ const DEFAULT_CHAIN_TO_RPC: RpcsPerChain = {
   [Chain.METIS]: "https://andromeda.metis.io/?owner=1088",
 };
 
-async function getChainRpc(chain: Chain): Promise<string> {
+export async function getChainRpc(chain: Chain): Promise<string> {
   // Check if there is an rpc fetched from remote storage or use the default
   const rpcUrl = await AsyncStorage.getItem(`rpc_${chain}`);
   if (rpcUrl) {

@@ -1,14 +1,16 @@
 import { Slider } from "@miblanchard/react-native-slider";
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Switch, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { getSupabase } from "./supabase";
 import * as SecureStore from "expo-secure-store";
+import { BalancesSettings, BalancesSettingsContextType, useBalancesSettings } from "./Contexts/BalancesSettings";
 
 const MAX_HEALTH_FACTOR = 10;
 
 export default function Settings() {
   const [sliderValue, setSliderValue] = useState<number | null>(null);
+  const { balancesSettings, setBalancesSettings } = useBalancesSettings();
 
   useEffect(() => {
     SecureStore.getItemAsync("supabaseUserId").then((supabaseUserId) => {
@@ -42,6 +44,13 @@ export default function Settings() {
           .then(); // just to await the execution of the query
       });
     });
+  };
+
+  const toogleShowZeroBalances = () => {
+    setBalancesSettings((balancesSettings : BalancesSettings) => ({
+      ...balancesSettings,
+      showZeroBalances: !balancesSettings.showZeroBalances,
+    }));
   };
 
   return (
@@ -123,6 +132,30 @@ export default function Settings() {
               </LinearGradient>
             </View>
           )}
+        </View>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingVertical: 24,
+            paddingHorizontal: 32,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 16,
+              color: "#FFF",
+            }}
+          >
+            Show zero balances
+          </Text>
+          <Switch
+            value={balancesSettings.showZeroBalances}
+            onValueChange={toogleShowZeroBalances}
+            trackColor={{ false: "#3B3F57", true: "#BB3DB8" }}
+          />
         </View>
       </View>
     </View>

@@ -11,7 +11,8 @@ import Addition from "./Addition";
 import { getSupabase, initializeSupabase } from "./supabase";
 import * as SecureStore from "expo-secure-store";
 import { updateChainRpcs } from "./network";
-import { useEffect } from "react";
+import { useEffect } from 'react';
+import { BalancesSettingsProvider } from "./Contexts/BalancesSettings";
 
 OneSignal.setAppId(Constants.expoConfig.extra.oneSignalAppId);
 const Stack = createNativeStackNavigator();
@@ -33,6 +34,7 @@ async function saveOneSignalId() {
   console.log("Saved Onesignal ID to supabase");
 }
 
+
 export default function App() {
   useEffect(() => {
     initializeSupabase();
@@ -40,34 +42,36 @@ export default function App() {
     updateChainRpcs();
   }, []);
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{ statusBarColor: "#000000" }}
-        initialRouteName="MainScreen"
-      >
-        <Stack.Screen
-          name="Main"
-          component={MainScreen}
-          options={{
-            header: () => <Header title="Aave alarm" />,
-          }}
-        />
-        <Stack.Screen
-          name="Account"
-          component={Account}
-          options={{ header: () => <Header title="Account" /> }}
-        />
-        <Stack.Screen
-          name="Settings"
-          component={Settings}
-          options={{ header: () => <Header title="Settings" /> }}
-        />
-        <Stack.Screen
-          name="Addition"
-          component={Addition}
-          options={{ header: () => <Header title="New account" /> }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <BalancesSettingsProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{ statusBarColor: "#000000" }}
+          initialRouteName="MainScreen"
+        >
+          <Stack.Screen
+            name="Main"
+            component={MainScreen}
+            options={{
+              header: () => <Header title="Aave alarm" />,
+            }}
+          />
+          <Stack.Screen
+            name="Account"
+            component={Account}
+            options={{ header: () => <Header title="Account" /> }}
+          />
+          <Stack.Screen
+            name="Settings"
+            component={Settings}
+            options={{ header: () => <Header title="Settings" /> }}
+          />
+          <Stack.Screen
+            name="Addition"
+            component={Addition}
+            options={{ header: () => <Header title="New account" /> }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </BalancesSettingsProvider>
   );
 }

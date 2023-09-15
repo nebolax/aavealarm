@@ -86,6 +86,7 @@ function AssetsTableRow(props: {
   supplied?: number;
   borrowed?: number;
 }) {
+  const showNullAmount = false;
   let iconName = props.assetName.toLowerCase();
   if (iconName.endsWith(".e") || iconName.endsWith(".b")) {
     iconName = iconName.slice(0, -2);
@@ -94,6 +95,13 @@ function AssetsTableRow(props: {
   } else if (iconName === "mimatic") {
     iconName = "mai";
   }
+
+  if(
+    !showNullAmount && 
+    ( props.supplied === undefined || props.supplied === 0)  &&
+    (props.borrowed === undefined || props.borrowed === 0)
+  ) return (<></>)
+  
   return (
     <View
       style={{

@@ -92,8 +92,8 @@ export default function Addition(props: {
         validatedAddress = await provider.resolveName(enteredAddress);
       } catch (e) {
         Alert.alert(
-          "Invalid address",
-          `${enteredAddress} is not a valid ENS address`
+          "Invalid ENS domain",
+          `${enteredAddress} is not a valid ENS domain`
         );
         return;
       }
@@ -116,7 +116,7 @@ export default function Addition(props: {
     }
 
     if (validatedAddress === null) {
-      Alert.alert("Invalid address", "Please enter a valid EVM or ENS address");
+      Alert.alert("Invalid address / domain", "Please enter a valid EVM address or a valid ENS domain");
       return;
     }
 
@@ -162,7 +162,7 @@ export default function Addition(props: {
             showsVerticalScrollIndicator={false}
           >
             <Text style={{ color: "#FFF", fontSize: 20, marginVertical: 16 }}>
-              Address
+              Address or ENS domain
             </Text>
             <TextInput
               style={{

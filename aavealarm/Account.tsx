@@ -91,6 +91,8 @@ function AssetsTableRow(props: {
     iconName = iconName.slice(0, -2);
   } else if (iconName.startsWith("m.")) {
     iconName = iconName.slice(2);
+  } else if (iconName === "mimatic") {
+    iconName = "mai";
   }
   return (
     <View

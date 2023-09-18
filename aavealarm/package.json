@@ -23,6 +23,7 @@
     "@react-navigation/native-stack": "^6.9.13",
     "@supabase/supabase-js": "^2.32.0",
     "big-integer": "^1.6.51",
+    "bignumber.js": "^9",
     "ethers": "^5.7.2",
     "ethjs-provider-http": "^0.1.6",
     "ethjs-query": "^0.3.8",
@@ -46,6 +47,7 @@
     "react-native-svg": "^13.11.0",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-uuid": "^2.0.1",
+    "reflect-metadata": "^0.1.13",
     "text-encoding": "^0.7.0",
     "text-encoding-polyfill": "^0.6.7"
   },

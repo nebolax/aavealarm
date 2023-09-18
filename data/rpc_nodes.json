@@ -7,5 +7,5 @@
   "ARBITRUM": "https://arb1.arbitrum.io/rpc",
   "OPTIMISM": "https://mainnet.optimism.io",
   "METIS": "https://andromeda.metis.io/?owner=1088",
-  "BASE": "https://mainnet.base.org",
+  "BASE": "https://mainnet.base.org"
 }

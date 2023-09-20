@@ -22,6 +22,7 @@ import { getSupabase } from "./supabase";
 import { NavigationProp } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import { humanizeChainName } from "./utils";
+import { getChainRpc } from "./network";
 
 function ChainCheckbox(props: {
   chain: Chain;
@@ -81,20 +82,41 @@ export default function Addition(props: {
     setSelectedChains(new Set(selectedChains));
   };
 
-  const addClicked = () => {
-    let validatedAddress: string;
-    try {
-      validatedAddress = ethers.utils.getAddress(enteredAddress);
-    } catch (e) {
-      Alert.alert(
-        "Invalid address",
-        `${enteredAddress} is not a valid EVM address`
-      );
-      return;
+  const addClicked = async () => {
+    let validatedAddress: string | null = null;
+  
+    if (enteredAddress.endsWith('.eth')) {
+      const rpc: string = await getChainRpc(Chain.ETHEREUM);
+      const provider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(rpc);
+      try {
+        validatedAddress = await provider.resolveName(enteredAddress);
+      } catch (e) {
+        Alert.alert(
+          "Invalid ENS domain",
+          `${enteredAddress} is not a valid ENS domain`
+        );
+        return;
+      }
+    } else {
+      try {
+        validatedAddress = ethers.utils.getAddress(enteredAddress);
+      } catch (e) {
+        Alert.alert(
+          "Invalid address",
+          `${enteredAddress} is not a valid EVM address`
+        );
+        return;
+      }
     }
+    
 
     if (selectedChains.size === 0) {
       Alert.alert("No chains selected", "Please select at least one chain");
+      return;
+    }
+
+    if (validatedAddress === null) {
+      Alert.alert("Invalid address / domain", "Please enter a valid EVM address or a valid ENS domain");
       return;
     }
 
@@ -140,7 +162,7 @@ export default function Addition(props: {
             showsVerticalScrollIndicator={false}
           >
             <Text style={{ color: "#FFF", fontSize: 20, marginVertical: 16 }}>
-              Address
+              Address or ENS domain
             </Text>
             <TextInput
               style={{

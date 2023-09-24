@@ -1,6 +1,6 @@
 import { Slider } from "@miblanchard/react-native-slider";
 import { useEffect, useState } from "react";
-import { Switch, Text, View } from "react-native";
+import { Platform, Switch, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { getSupabase } from "./supabase";
 import * as SecureStore from "expo-secure-store";
@@ -155,6 +155,7 @@ export default function Settings() {
             value={balancesSettings.showZeroBalances}
             onValueChange={toogleShowZeroBalances}
             trackColor={{ false: "#3B3F57", true: "#BB3DB8" }}
+            thumbColor={Platform.OS === "android" ? "#fff" : undefined}
           />
         </View>
       </View>

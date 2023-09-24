@@ -1,4 +1,5 @@
-import { useContext, createContext, useState, ReactNode } from 'react';
+import { useContext, createContext, useState, ReactNode, useEffect } from 'react';
+import useAsyncStorage from '../hooks/useAsyncStorage';
 
 export interface BalancesSettings {
   showZeroBalances: boolean;
@@ -6,7 +7,7 @@ export interface BalancesSettings {
 
 export interface BalancesSettingsContextType {
   balancesSettings: BalancesSettings;
-  setBalancesSettings: React.Dispatch<React.SetStateAction<BalancesSettings>>;
+  updateBalancesSettings: (callback: (balancesSettings: BalancesSettings) => BalancesSettings) => void;
 }
 
 const BalancesSettingsContext = createContext<BalancesSettingsContextType | undefined>(undefined);
@@ -16,9 +17,30 @@ export function BalancesSettingsProvider({ children }: { children: ReactNode }) 
   const [balancesSettings, setBalancesSettings] = useState<BalancesSettings>({
     showZeroBalances: false,
   });
+  const { loadKey,storeKey } = useAsyncStorage();
+
+  const updateBalancesSettings = (callback: (balancesSettings: BalancesSettings) => BalancesSettings) => {
+    setBalancesSettings((balancesSettings) => {
+      const newBalancesSettings = callback(balancesSettings);
+      storeKey('@balancesSettings', newBalancesSettings);
+      return newBalancesSettings;
+    });
+  };
+
+  const loadBalancesSettings = async () => {
+    const balancesSettings = await loadKey('@balancesSettings');
+    if(!balancesSettings) return;
+    setBalancesSettings(balancesSettings);
+  };
+
+  useEffect(() => {
+    loadBalancesSettings();
+  }, []);
+
+
 
   return (
-    <Provider value={{ balancesSettings, setBalancesSettings }}>
+    <Provider value={{ balancesSettings, updateBalancesSettings }}>
       {children}
     </Provider>
   );

@@ -10,7 +10,7 @@ const MAX_HEALTH_FACTOR = 10;
 
 export default function Settings() {
   const [sliderValue, setSliderValue] = useState<number | null>(null);
-  const { balancesSettings, setBalancesSettings } = useBalancesSettings();
+  const { balancesSettings, updateBalancesSettings } = useBalancesSettings();
 
   useEffect(() => {
     SecureStore.getItemAsync("supabaseUserId").then((supabaseUserId) => {
@@ -47,7 +47,7 @@ export default function Settings() {
   };
 
   const toogleShowZeroBalances = () => {
-    setBalancesSettings((balancesSettings : BalancesSettings) => ({
+    updateBalancesSettings((balancesSettings) => ({
       ...balancesSettings,
       showZeroBalances: !balancesSettings.showZeroBalances,
     }));

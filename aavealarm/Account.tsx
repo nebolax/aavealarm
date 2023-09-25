@@ -4,6 +4,7 @@ import { queryAccountData } from "./network";
 import { useEffect, useState } from "react";
 import { formatNumber, humanizeChainName } from "./utils";
 import { SvgUri } from "react-native-svg";
+import { useBalancesSettings } from "./Contexts/BalancesSettings";
 
 function AcccountLabel(props: { text: string }) {
   return (
@@ -86,6 +87,8 @@ function AssetsTableRow(props: {
   supplied?: number;
   borrowed?: number;
 }) {
+  const { balancesSettings } = useBalancesSettings();
+  const { showZeroBalances } = balancesSettings;
   let iconName = props.assetName.toLowerCase();
   if (iconName.endsWith(".e") || iconName.endsWith(".b")) {
     iconName = iconName.slice(0, -2);
@@ -94,6 +97,13 @@ function AssetsTableRow(props: {
   } else if (iconName === "mimatic") {
     iconName = "mai";
   }
+
+  if(
+    !showZeroBalances && 
+    ( props.supplied === undefined || props.supplied === 0)  &&
+    (props.borrowed === undefined || props.borrowed === 0)
+  ) return (<></>)
+
   return (
     <View
       style={{

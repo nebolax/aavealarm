@@ -27,6 +27,7 @@ const DEFAULT_CHAIN_TO_RPC: RpcsPerChain = {
   [Chain.ARBITRUM]: "https://arb1.arbitrum.io/rpc",
   [Chain.OPTIMISM]: "https://mainnet.optimism.io",
   [Chain.METIS]: "https://andromeda.metis.io/?owner=1088",
+  [Chain.BASE]: "https://mainnet.base.org",
 };
 
 export async function getChainRpc(chain: Chain): Promise<string> {
@@ -103,6 +104,10 @@ function getAaveMarket(
       market = markets.AaveV3Metis;
       chainId = ChainId.metis_andromeda;
       break;
+    case chain == Chain.BASE && aaveVersion == 3:
+        market = markets.AaveV3Base;
+        chainId = ChainId.base;
+        break;
   }
   return [
     market!.UI_POOL_DATA_PROVIDER,

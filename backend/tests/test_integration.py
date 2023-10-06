@@ -30,18 +30,18 @@ def test_low_health_factor():
     def new_get_raw_accounts(chain, aave_version):
         return [
             {
-                'address': '0xd9c4F1a86603A969898277E0D1F5B6eD6C4F6D25',
+                'address': '0x28fe46db880072E129816EE2BCE5BC5a9712A058',
                 'chain': 'ETHEREUM',
                 'aave_version': 2,
                 'user': {
-                  'health_factor_threshold': 1.4,
+                  'health_factor_threshold': 2.2,
                   'onesignal_id': 'onesignal-id-1'
                 },
                 'user_id': 'user-id-1',
                 'last_health_factor_notification': '2023-08-25T02:00:00.00000',
             },
             {
-                'address': '0xd9c4F1a86603A969898277E0D1F5B6eD6C4F6D25',
+                'address': '0xFbE87d602F7d7Dd511349BE4aCF58842392124a0',
                 'chain': 'ETHEREUM',
                 'aave_version': 2,
                 'user': {
@@ -52,7 +52,7 @@ def test_low_health_factor():
                 'last_health_factor_notification': '2023-08-25T10:00:00.00000',
             },
             {
-                'address': '0xd9c4F1a86603A969898277E0D1F5B6eD6C4F6D25',
+                'address': '0x28fe46db880072E129816EE2BCE5BC5a9712A058',
                 'chain': 'ETHEREUM',
                 'aave_version': 2,
                 'user': {
@@ -63,11 +63,11 @@ def test_low_health_factor():
                 'last_health_factor_notification': '2023-08-25T02:00:00.00000',
             },
             {
-                'address': '0xd9c4F1a86603A969898277E0D1F5B6eD6C4F6D25',
+                'address': '0xFbE87d602F7d7Dd511349BE4aCF58842392124a0',
                 'chain': 'ETHEREUM',
                 'aave_version': 2,
                 'user': {
-                  'health_factor_threshold': 1.5,
+                  'health_factor_threshold': 1.8,
                   'onesignal_id': 'onesignal-id-4'
                 },
                 'user_id': 'user-id-4',
@@ -84,27 +84,22 @@ def test_low_health_factor():
 
     connector = ChainConnector(
         chain=Chain.ETHEREUM,
-        http_rpc_url='https://it-is-mocked.anyway',
+        http_rpc_url='https://eth.llamarpc.com',
         ws_rpc_url='https://it-is-mocked.anyway',
         notifier=notifier,
         database=database,
-        pool_address='0xB3E147cCc3822c84f94719487C3031Fd24513F92',
+        pool_address='0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9',
         aave_version=2,
     )
-
-    def new_get_health_factors(accounts_batch):
-      return [1.37] * 4
-
-    get_health_factors_patch = patch.object(connector, 'get_health_factors', new=new_get_health_factors)
-
+  
     disable_set_last_health_factor_notification_patch = patch.object(database, 'set_last_health_factor_notification', new=lambda account, user_id, timestamp: None)
     
-    with get_raw_accounts_patch, get_health_factors_patch, disable_set_last_health_factor_notification_patch, create_notification_patch:
+    with get_raw_accounts_patch, disable_set_last_health_factor_notification_patch, create_notification_patch:
       connector.check_health_factors()
 
     assert sent_notifications == [
-       (['onesignal-id-1'], 'Low health factor!', 'Health factor on your account Ethereum 0xd9c4F1a86603A969898277E0D1F5B6eD6C4F6D25 is 1.37 which is below the threshold of 1.4.'),
-       (['onesignal-id-4'], 'Low health factor!', 'Health factor on your account Ethereum 0xd9c4F1a86603A969898277E0D1F5B6eD6C4F6D25 is 1.37 which is below the threshold of 1.5.'),
+       (['onesignal-id-1'], 'Low health factor!', 'Health factor on your account Ethereum 0x28fe46db880072E129816EE2BCE5BC5a9712A058 is 1.56 which is below the threshold of 2.2.'),
+       (['onesignal-id-4'], 'Low health factor!', 'Health factor on your account Ethereum 0xFbE87d602F7d7Dd511349BE4aCF58842392124a0 is 1.53 which is below the threshold of 1.8.'),
     ]
 
 

@@ -25,7 +25,7 @@ logging.basicConfig(
 logging.getLogger('httpx').setLevel(logging.WARNING)
 logging.info('Starting backend')
 
-LENDING_POOL_ADDRESSES = {
+LENDING_POOL_ADDRESSES = {  # Mapping of chain to its Aave v2 and v3 pool addresses
     Chain.ETHEREUM: ("0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9", "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2"),
     Chain.ETHEREUM_SEPOLIA: (None, "0xE7EC1B0015eb2ADEedb1B7f9F1Ce82F9DAD6dF08"),
     Chain.POLYGON: ("0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf", "0x794a61358D6845594F94dc1DB02A252b5b4814aD"),

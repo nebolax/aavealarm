@@ -6,6 +6,7 @@ from typing import Generator
 
 from eth_utils import to_checksum_address
 from web3 import HTTPProvider, Web3
+from web3.contract import Contract
 from web3.types import HexBytes, LogReceipt
 
 from backend.admin import send_admin_message
@@ -15,13 +16,16 @@ from backend.types import Chain, ChainAccount, ChainAccountWithAllData
 
 WS_NEW_HEADS_SUBSCRIBE_MESSAGE = {'id': 1, 'method': 'eth_subscribe', 'params': ['newHeads']}
 
-HEALTH_FACTOR_CHECK_PERIOD = 60 * 5  # every 5 minutes
-LIQUIDATIONS_CHECK_PERIOD = 60 * 1  # every minute
+HEALTH_FACTOR_CHECK_PERIOD = 60 * 15  # every 15 minutes
+LIQUIDATIONS_CHECK_PERIOD = 60 * 15  # every 15 minutes
 HEALTH_FACTOR_BATCH_SIZE = 100  # How many accounts to check at once. Limited by max gas per call.
 MAX_UINT256 = 2 ** 256 - 1
 MAX_BLOCK_RANGE = 100
 
 LIQUIDATION_TOPIC = '0xe413a321e8681d831f4dbccbca790d2952b56f977908e45be37335533e005286'
+MULTICALL_ADDRESS = '0xcA11bde05977b3631167028862bE2a173976CA11'
+
+
 
 def topic_to_address(topic: HexBytes) -> str:
     return to_checksum_address('0x' + topic.hex()[-40:])
@@ -65,22 +69,42 @@ class ChainConnector():
         
         with open('./backend/abi/erc20.json') as f:
             erc20_abi = json.loads(f.read())
+
+        with open('./backend/abi/multicall.json') as f:
+            multicall_abi = json.loads(f.read())
         
         self.erc20_abi = erc20_abi
-        self.pool_contract = self.web3.eth.contract(address=pool_address, abi=pool_abi)  # type: ignore[call-overload]
+        self.pool_contract: Contract = self.web3.eth.contract(
+            address=pool_address,
+            abi=pool_abi,
+        )
+        self.multical_contract: Contract = self.web3.eth.contract(
+            address=MULTICALL_ADDRESS,
+            abi=multicall_abi,
+        )
 
-    def get_health_factors(self, accounts_batch: list[ChainAccountWithAllData]) -> list[float]:
+    def get_health_factors(
+            self,
+            accounts_batch: list[ChainAccountWithAllData],
+    ) -> list[float]:
         """Get aave health factors of all accounts in the batch"""
-        accounts_data = []
+        encoded_calls = []
         for account in accounts_batch:
-            accounts_data.append(self.pool_contract.functions.getUserAccountData(account.account.address).call())
+            encoded = self.pool_contract.encodeABI(
+                fn_name='getUserAccountData',
+                args=[account.account.address],
+            )
+            encoded_calls.append((self.pool_contract.address, encoded))
+
+        accounts_data = self.multical_contract.functions.aggregate(encoded_calls).call()[1]
 
         health_factors = []
         for account_data in accounts_data:
-            if account_data[-1] == MAX_UINT256:
+            raw_health_factor = int.from_bytes(account_data[-32:], "big") 
+            if raw_health_factor == MAX_UINT256:
                 health_factors.append(-1)
             else:
-                health_factors.append(account_data[-1] / 1e18)
+                health_factors.append(raw_health_factor / 1e18)
         
         return health_factors
 

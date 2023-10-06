@@ -85,7 +85,6 @@ def test_low_health_factor():
     connector = ChainConnector(
         chain=Chain.ETHEREUM,
         http_rpc_url='https://eth.llamarpc.com',
-        ws_rpc_url='https://it-is-mocked.anyway',
         notifier=notifier,
         database=database,
         pool_address='0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9',
@@ -127,7 +126,6 @@ def test_liquidation():
     connector = ChainConnector(
         chain=Chain.ETHEREUM,
         http_rpc_url='https://it-is-mocked.anyway',
-        ws_rpc_url='https://it-is-mocked.anyway',
         notifier=notifier,
         database=database,
         pool_address='0xB3E147cCc3822c84f94719487C3031Fd24513F92',

@@ -52,7 +52,6 @@ for chain in Chain:
         connectors.append(ChainConnector(
             chain=chain,
             http_rpc_url=os.environ[f'{chain.value}_HTTP_RPC'],
-            ws_rpc_url=os.environ[f'{chain.value}_WS_RPC'],
             notifier=notifier,
             database=database,
             pool_address=v2_pool_address,
@@ -63,7 +62,6 @@ for chain in Chain:
         connectors.append(ChainConnector(
             chain=chain,
             http_rpc_url=os.environ[f'{chain.value}_HTTP_RPC'],
-            ws_rpc_url=os.environ[f'{chain.value}_WS_RPC'],
             notifier=notifier,
             database=database,
             pool_address=v3_pool_address,

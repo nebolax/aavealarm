@@ -14,8 +14,6 @@ from backend.database import Database
 from backend.notifier import Notifier
 from backend.types import Chain, ChainAccount, ChainAccountWithAllData
 
-WS_NEW_HEADS_SUBSCRIBE_MESSAGE = {'id': 1, 'method': 'eth_subscribe', 'params': ['newHeads']}
-
 HEALTH_FACTOR_CHECK_PERIOD = 60 * 15  # every 15 minutes
 LIQUIDATIONS_CHECK_PERIOD = 60 * 15  # every 15 minutes
 HEALTH_FACTOR_BATCH_SIZE = 100  # How many accounts to check at once. Limited by max gas per call.
@@ -49,14 +47,12 @@ class ChainConnector():
             self,
             chain: Chain,
             http_rpc_url: str,
-            ws_rpc_url: str,
             notifier: Notifier,
             database: Database,
             pool_address: str,
             aave_version: int,
     ) -> None:
         self.http_rpc_url = http_rpc_url
-        self.ws_rpc_url = ws_rpc_url
         self.web3 = Web3(HTTPProvider(http_rpc_url))
         self.chain = chain
         self.notifier = notifier

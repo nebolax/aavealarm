@@ -34,7 +34,7 @@ LENDING_POOL_ADDRESSES = {  # Mapping of chain to its Aave v2 and v3 pool addres
     Chain.OPTIMISM: (None, "0x794a61358D6845594F94dc1DB02A252b5b4814aD"),
     Chain.ARBITRUM: (None, "0x794a61358D6845594F94dc1DB02A252b5b4814aD"),
     Chain.METIS: (None, "0x90df02551bB792286e8D4f13E0e357b4Bf1D6a57"),
-    Chain.BASE: (None, "0xa238dd80c259a72e81d7e4664a9801593f98d1c5"),
+    Chain.BASE: (None, "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5"),
 
 }
 

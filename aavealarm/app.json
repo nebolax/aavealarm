@@ -25,7 +25,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.aavealarm"
+      "package": "com.aavealarm",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/icon.png"

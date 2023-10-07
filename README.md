@@ -19,3 +19,7 @@ The mobile app itself is developed with react native + expo, and the backend par
 ## Contribution
 
 Feel free to contribute! Open an issue or a pull request in a free form and you will be guided through the next steps.
+
+## Aave Simulation
+
+Do you want to simulate changes to your Aave positions before taking real actions? Check out [defisim.xyz](https://defisim.xyz)!

@@ -1,6 +1,6 @@
 import { Slider } from "@miblanchard/react-native-slider";
 import { useEffect, useState } from "react";
-import { Platform, Switch, Text, View } from "react-native";
+import { Platform, Switch, Text, TextInput, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { getSupabase } from "./supabase";
 import * as SecureStore from "expo-secure-store";
@@ -8,8 +8,27 @@ import { BalancesSettings, BalancesSettingsContextType, useBalancesSettings } fr
 
 const MAX_HEALTH_FACTOR = 10;
 
+type SettingsForm = {
+  sliderValue: number | null;
+  inputValue: string;
+  lastModifiedField: string;
+};
+
 export default function Settings() {
-  const [sliderValue, setSliderValue] = useState<number | null>(null);
+  const [formData, setFormData] = useState<SettingsForm>({
+    sliderValue: null,
+    inputValue: '',
+    lastModifiedField: '',
+  });
+  const { sliderValue, inputValue } = formData;
+  const setSliderValue = (value: number) => {
+    setFormData({
+      ...formData,
+      sliderValue: value,
+      lastModifiedField: 'sliderValue',
+    });
+  }
+
   const { balancesSettings, updateBalancesSettings } = useBalancesSettings();
 
   useEffect(() => {
@@ -23,15 +42,21 @@ export default function Settings() {
             if (error) {
               return;
             }
-            setSliderValue(data[0].health_factor_threshold / MAX_HEALTH_FACTOR);
+            setFormData({
+              ...formData,
+              sliderValue: data[0].health_factor_threshold / MAX_HEALTH_FACTOR,
+              lastModifiedField: 'sliderValue',
+            });
           });
       });
     });
   }, []);
 
+  const healthFactor = sliderValue! * MAX_HEALTH_FACTOR;;
   const slidingComplete = () => {
+    if (healthFactor <= 0 || healthFactor > MAX_HEALTH_FACTOR) return;
     const valueToSet = parseFloat(
-      (sliderValue! * MAX_HEALTH_FACTOR).toFixed(2)
+      (healthFactor).toFixed(2)
     );
     SecureStore.getItemAsync("supabaseUserId").then((supabaseUserId) => {
       getSupabase().then((supabase) => {
@@ -52,6 +77,30 @@ export default function Settings() {
       showZeroBalances: !balancesSettings.showZeroBalances,
     }));
   };
+
+  useEffect(() => {
+    if(inputValue === "" || formData.lastModifiedField === 'sliderValue') return;
+    const newSliderValue = parseFloat(inputValue) / MAX_HEALTH_FACTOR;
+    if(sliderValue === newSliderValue) return;
+    if (newSliderValue <= 0 || newSliderValue > MAX_HEALTH_FACTOR) return;
+
+    setFormData({
+      ...formData,
+      sliderValue: newSliderValue
+    });
+  }, [inputValue]);
+
+
+  useEffect(() => {
+    if(sliderValue === null || formData.lastModifiedField === 'inputValue') return slidingComplete();
+    const newInputValue = (sliderValue * MAX_HEALTH_FACTOR).toFixed(2);
+    if(inputValue === newInputValue) return;
+
+    setFormData({
+      ...formData,
+      inputValue: newInputValue
+    });
+  }, [sliderValue]);
 
   return (
     <View
@@ -90,9 +139,19 @@ export default function Settings() {
         >
           {sliderValue !== null && (
             <View>
-              <Text style={{ color: "#FFF", marginVertical: 16 }}>
-                {(sliderValue! * MAX_HEALTH_FACTOR).toFixed(2)}
-              </Text>
+              <TextInput
+                value={inputValue}
+                keyboardType="numeric"
+                style={{ color: "#FFF", marginVertical: 16 }}
+                onChangeText={(text) => {
+
+                  setFormData({
+                    ...formData,
+                    inputValue: text,
+                    lastModifiedField: 'inputValue',
+                  });
+                }}
+              />
               <LinearGradient
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}

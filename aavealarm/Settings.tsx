@@ -52,7 +52,7 @@ export default function Settings() {
     });
   }, []);
 
-  const healthFactor = sliderValue! * MAX_HEALTH_FACTOR;;
+  const healthFactor = sliderValue! * MAX_HEALTH_FACTOR;
   const slidingComplete = () => {
     if (healthFactor <= 0 || healthFactor > MAX_HEALTH_FACTOR) return;
     const valueToSet = parseFloat(

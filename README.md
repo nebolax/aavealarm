@@ -5,7 +5,7 @@ Mobile app that tracks your aave positions and notifies you of low health factor
 
 Google Play Store: https://play.google.com/store/apps/details?id=com.aavealarm&pcampaignid=web_share
 
-Apple App Store: https://apps.apple.com/am/app/aave-alarm/id6454900102
+Apple App Store: https://apps.apple.com/am/app/aave-alarm/id6454900102 WARNING! Apple has banned the developer account that was used to publish Aave Alarm (nothing else was publushed from that account), so Aave Alarm is no longer available on iOS.
 
 ## Screenshots
 1   |2   |3

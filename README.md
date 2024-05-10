@@ -1,5 +1,5 @@
 # Aave Alarm
-Mobile app that tracks your aave positions and notifies you of low health factor and liquidations.
+Mobile app that tracks your aave positions and notifies you of low health factor and liquidations. 400 positions are being tracked and growing!
 
 ## Download it
 

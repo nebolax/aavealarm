@@ -1,3 +1,4 @@
+import logging
 import os
 
 from aiogram import Bot
@@ -11,4 +12,7 @@ TG_ADMIN_ID = 327150749
 bot = Bot(token=TG_BOT_TOKEN, parse_mode='HTML')
 
 async def send_admin_message(text: str):
-    await bot.send_message(TG_ADMIN_ID, text)
+    try:
+        await bot.send_message(TG_ADMIN_ID, text)
+    except Exception:
+        logging.error('Couldnt send a telegram notification')

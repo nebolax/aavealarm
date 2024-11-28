@@ -1,6 +1,8 @@
 # Aave Alarm
 Mobile app that tracks your aave positions and notifies you of low health factor and liquidations. 400 positions are being tracked and growing!
 
+**Due to Aave Grants shutting down and the developer of this app having issues with Google Play and App Store, it's no longer possible to download the app.**
+
 ## Download it
 
 Google Play Store: https://play.google.com/store/apps/details?id=com.aavealarm&pcampaignid=web_share
